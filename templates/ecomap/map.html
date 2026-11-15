@@ -199,27 +199,27 @@ body.dark-mode .filter-panel {
     </h3>
 
     <label class="filter-item">
-        <input type="checkbox" checked onchange="filterMarkers()">
+        <input type="checkbox" class="flt" value="trash" checked onchange="filterMarkers()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="red" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
         Мусорные свалки
     </label>
     <label class="filter-item">
-        <input type="checkbox" checked onchange="filterMarkers()">
+        <input type="checkbox" class="flt" value="water" checked onchange="filterMarkers()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
         Загрязнённые реки
     </label>
     <label class="filter-item">
-        <input type="checkbox" checked onchange="filterMarkers()">
+        <input type="checkbox" class="flt" value="forest" checked onchange="filterMarkers()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="#f97316" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
         Вырубка леса
     </label>
     <label class="filter-item">
-        <input type="checkbox" checked onchange="filterMarkers()">
+        <input type="checkbox" class="flt" value="air" checked onchange="filterMarkers()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="#a855f7" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
         Загрязнение воздуха
     </label>
     <label class="filter-item">
-        <input type="checkbox" checked onchange="filterMarkers()">
+        <input type="checkbox" class="flt" value="resolved" checked onchange="filterMarkers()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="#22c55e" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
         Решено
     </label>
@@ -280,6 +280,9 @@ body.dark-mode .filter-panel {
             <option value="forest">Вырубка леса</option>
             <option value="air">Загрязнение воздуха</option>
         </select>
+        <input type="url" class="modal-input" id="pointVideo" placeholder="Ссылка на видео (необязательно)">
+        <label style="display:block; font-size:0.85rem; color:var(--text-light); margin-bottom:0.3rem;">Фото (необязательно, до 5 МБ)</label>
+        <input type="file" class="modal-input" id="pointPhoto" accept="image/*">
         <div class="modal-btns">
             <button class="btn-cancel" onclick="closeModal()" style="display:flex; align-items:center; justify-content:center; gap:0.5rem;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -302,8 +305,9 @@ body.dark-mode .filter-panel {
 
 {% block extra_js %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+{{ points|json_script:"points-data" }}
 <script>
-const pointsData = {{ points_json|safe }};
+const pointsData = JSON.parse(document.getElementById('points-data').textContent);
 let map, markers = [], addingMode = false, tempLat, tempLng;
 
 function getCsrfToken() {
@@ -315,6 +319,10 @@ function getCsrfToken() {
         .find(item => item.startsWith('csrftoken='));
     return cookie ? decodeURIComponent(cookie.slice('csrftoken='.length)) : '';
 }
+
+// экранируем пользовательский текст перед вставкой в HTML
+const esc = s => String(s ?? '').replace(/[&<>"']/g,
+    c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 // Инициализация карты
 map = L.map('map').setView([41.2044, 74.7661], 7);
@@ -364,8 +372,6 @@ function addMarkers(points) {
     markers.forEach(m => map.removeLayer(m));
     markers = [];
     
-    let counts = {trash:0, water:0, forest:0, resolved:0};
-    
     points.forEach(p => {
         const icon = L.divIcon({
             html: `<div style="font-size:24px; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5))">
@@ -375,37 +381,46 @@ function addMarkers(points) {
             iconSize: [30, 30],
         });
 
+        const media =
+            (p.photo ? `<img src="${esc(p.photo)}" alt="" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px; margin-bottom:0.5rem;">` : '') +
+            (p.video_url ? `<a href="${esc(p.video_url)}" target="_blank" rel="noopener noreferrer">🎥 Смотреть видео</a><br>` : '');
+        const delBtn = p.can_delete
+            ? `<br><br><button onclick="deletePoint(${p.id})" style="background:#ef4444; color:white; border:none; padding:0.4rem 0.8rem; border-radius:6px; cursor:pointer; width:100%;">🗑️ Удалить точку</button>`
+            : '';
+
         const marker = L.marker([p.lat, p.lng], {icon})
-    .addTo(map)
-    .bindPopup(`
-        <div style="min-width:200px">
-            <b>${p.title}</b><br>
-            <small>${p.description}</small><br><br>
-            <span>👤 ${p.reported_by}</span><br>
-            <span>${p.status === 'resolved' ? '✅ Решено' : '⚠️ Требует внимания'}</span><br><br>
-            {% if user.is_authenticated %}
-            <button onclick="deletePoint(${p.id})" style="background:#ef4444; color:white; border:none; padding:0.4rem 0.8rem; border-radius:6px; cursor:pointer; width:100%;">
-                🗑️ Удалить точку
-            </button>
-            {% endif %}
-        </div>
-    `);
+            .addTo(map)
+            .bindPopup(`
+                <div style="min-width:200px">
+                    ${media}
+                    <b>${esc(p.title)}</b><br>
+                    <small>${esc(p.description)}</small><br><br>
+                    <span>👤 ${esc(p.reported_by)}</span><br>
+                    <span>${p.status === 'resolved' ? '✅ Решено' : '⚠️ Требует внимания'}</span>
+                    ${delBtn}
+                </div>
+            `);
         
         markers.push(marker);
 
-        if (p.status === 'resolved') counts.resolved++;
-        else if (p.type === 'trash') counts.trash++;
-        else if (p.type === 'water') counts.water++;
-        else if (p.type === 'forest') counts.forest++;
     });
 
-    document.getElementById('countTrash').textContent = counts.trash;
-    document.getElementById('countWater').textContent = counts.water;
-    document.getElementById('countForest').textContent = counts.forest;
-    document.getElementById('countResolved').textContent = counts.resolved;
+}
+
+function updateCounts() {
+    const c = {trash: 0, water: 0, forest: 0, resolved: 0};
+    pointsData.forEach(p => {
+        if (p.status === 'resolved') c.resolved++;
+        else if (c[p.type] !== undefined) c[p.type]++;
+    });
+    document.getElementById('countTrash').textContent = c.trash;
+    document.getElementById('countWater').textContent = c.water;
+    document.getElementById('countForest').textContent = c.forest;
+    document.getElementById('countResolved').textContent = c.resolved;
 }
 
 addMarkers(pointsData);
+updateCounts();
 
 // Добавление точки
 function startAddPoint() {
@@ -426,36 +441,41 @@ function closeModal() {
     document.getElementById('modalOverlay').classList.remove('show');
     document.getElementById('pointTitle').value = '';
     document.getElementById('pointDesc').value = '';
+    document.getElementById('pointVideo').value = '';
+    document.getElementById('pointPhoto').value = '';
 }
 
 function savePoint() {
-    const title = document.getElementById('pointTitle').value;
-    const desc = document.getElementById('pointDesc').value;
-    const type = document.getElementById('pointType').value;
-
+    const title = document.getElementById('pointTitle').value.trim();
     if (!title) { alert('Введи название!'); return; }
 
+    const fd = new FormData();
+    fd.append('title', title);
+    fd.append('description', document.getElementById('pointDesc').value);
+    fd.append('type', document.getElementById('pointType').value);
+    fd.append('video_url', document.getElementById('pointVideo').value.trim());
+    fd.append('latitude', tempLat);
+    fd.append('longitude', tempLng);
+
+    const photo = document.getElementById('pointPhoto').files[0];
+    if (photo) {
+        if (photo.size > 5 * 1024 * 1024) { alert('Фото больше 5 МБ'); return; }
+        fd.append('photo', photo);
+    }
+
+    // Content-Type НЕ ставим вручную: браузер сам добавит boundary для FormData
     fetch('/ecomap/add/', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
-        },
-        body: JSON.stringify({title, description: desc, type, lat: tempLat, lng: tempLng})
+        headers: { 'X-CSRFToken': getCsrfToken() },
+        body: fd
     })
     .then(async response => {
-        if (!response.ok) {
-            throw new Error(`Ошибка сервера (${response.status})`);
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || data.status !== 'ok') {
+            throw new Error(data.message || `Ошибка сервера (${response.status})`);
         }
-        return response.json();
-    })
-    .then(data => {
-        if (data.status === 'ok') {
-            closeModal();
-            location.reload();
-        } else {
-            throw new Error(data.message || 'Не удалось сохранить точку');
-        }
+        closeModal();
+        location.reload();
     })
     .catch(error => {
         console.error('Не удалось добавить точку на карту:', error);
@@ -463,7 +483,10 @@ function savePoint() {
     });
 }
 
-function filterMarkers() { }
+function filterMarkers() {
+    const on = new Set([...document.querySelectorAll('.flt:checked')].map(c => c.value));
+    addMarkers(pointsData.filter(p => p.status === 'resolved' ? on.has('resolved') : on.has(p.type)));
+}
 
 function deletePoint(id) {
     if (!confirm('Удалить эту точку?')) return;

@@ -1,45 +1,63 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.views.decorators.http import require_POST
+
+from .forms import EcoPointForm
 from .models import EcoPoint
-import json
+
+
+def _error(message, status=400):
+    return JsonResponse({'status': 'error', 'message': message}, status=status)
+
 
 def ecomap_view(request):
-    points = EcoPoint.objects.all()
+    user = request.user
     points_data = []
-    for point in points:
+    for p in EcoPoint.objects.select_related('reported_by'):
         points_data.append({
-            'id': point.id,
-            'title': point.title,
-            'description': point.description,
-            'type': point.type,
-            'status': point.status,
-            'lat': point.latitude,
-            'lng': point.longitude,
-            'reported_by': point.reported_by.username,
+            'id': p.id,
+            'title': p.title,
+            'description': p.description,
+            'type': p.type,
+            'status': p.status,
+            'lat': p.latitude,
+            'lng': p.longitude,
+            'reported_by': p.reported_by.username,
+            'photo': p.photo.url if p.photo else '',
+            'video_url': p.video_url,
+            'can_delete': user.is_authenticated and (user.is_staff or p.reported_by_id == user.id),
         })
-    return render(request, 'ecomap/map.html', {
-        'points_json': json.dumps(points_data)
-    })
+    # в шаблоне: {{ points|json_script:"points-data" }}, это безопасно для любого текста
+    return render(request, 'ecomap/map.html', {'points': points_data})
 
-@login_required
+
+@require_POST
 def add_point(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        EcoPoint.objects.create(
-            title=data['title'],
-            description=data['description'],
-            type=data['type'],
-            latitude=data['lat'],
-            longitude=data['lng'],
-            reported_by=request.user
-        )
-        return JsonResponse({'status': 'ok'})
-    return JsonResponse({'status': 'error'})
+    if not request.user.is_authenticated:
+        return _error('Нужно войти в аккаунт.', status=401)
 
-@login_required
+    form = EcoPointForm(request.POST, request.FILES)
+    if not form.is_valid():
+        parts = []
+        for name, errors in form.errors.items():
+            label = form.fields[name].label or name
+            parts.append(f'{label}: {errors[0]}')
+        return _error('; '.join(parts))
+
+    point = form.save(commit=False)
+    point.reported_by = request.user
+    point.save()
+    return JsonResponse({'status': 'ok', 'id': point.pk})
+
+
+@require_POST
 def delete_point(request, pk):
-    from django.shortcuts import get_object_or_404
-    point = get_object_or_404(EcoPoint, pk=pk, reported_by=request.user)
+    if not request.user.is_authenticated:
+        return _error('Нужно войти в аккаунт.', status=401)
+
+    point = get_object_or_404(EcoPoint, pk=pk)
+    if not (request.user.is_staff or point.reported_by_id == request.user.id):
+        return _error('Можно удалять только свои точки.', status=403)
+
     point.delete()
     return JsonResponse({'status': 'ok'})

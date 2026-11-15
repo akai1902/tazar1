@@ -86,6 +86,29 @@
     border-bottom: 1px solid var(--bg);
     color: var(--text-light);
 }
+
+.msg { padding: 0.8rem 1rem; border-radius: 10px; margin-bottom: 1rem; font-weight: 600; font-size: 0.9rem; }
+.msg-success { background: #d1fae5; color: #065f46; }
+.msg-error { background: #fee2e2; color: #991b1b; }
+.msg-info { background: #e0f2fe; color: #075985; }
+
+.btn-pending {
+    width: 100%; padding: 1rem; background: #fef3c7; color: #92400e;
+    border-radius: 12px; font-size: 1.1rem; font-weight: 700; text-align: center; display: block;
+}
+
+button.btn-take { border: none; font-family: inherit; }
+
+.proof-form { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--bg); }
+.proof-form h3 { margin-bottom: 1rem; }
+.proof-field { margin-bottom: 1rem; }
+.proof-field label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.4rem; }
+.proof-field input[type=url], .proof-field select, .proof-field textarea, .proof-field input[type=file] {
+    width: 100%; padding: 0.7rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px;
+    background: var(--bg); color: var(--text); font-family: inherit; font-size: 0.95rem;
+}
+.proof-field input:focus, .proof-field select:focus, .proof-field textarea:focus { outline: none; border-color: var(--primary); }
+.field-error { color: #b91c1c; font-size: 0.85rem; margin-top: 0.3rem; }
 </style>
 {% endblock %}
 
@@ -101,6 +124,9 @@
 </div>
 
 <div class="detail-container">
+    {% for message in messages %}
+        <div class="msg msg-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
     <div class="detail-card">
         <div class="detail-tags">
             <span class="badge badge-green">{{ challenge.get_category_display }}</span>
@@ -118,15 +144,49 @@
         <div class="points-big">🟡 +{{ challenge.points }} баллов за выполнение</div>
 
         {% if user.is_authenticated %}
-            {% if user_challenge %}
-                <div class="btn-taken">✅ Вы уже участвуете в этом челлендже!</div>
+            {% if not user_challenge %}
+                {% if challenge.is_active %}
+                    <form method="post" action="{% url 'take_challenge' challenge.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-take">Принять челлендж</button>
+                    </form>
+                {% else %}
+                    <div class="btn-pending" style="background:#fee2e2; color:#991b1b;">Челлендж закрыт</div>
+                {% endif %}
+            {% elif user_challenge.status == 'completed' %}
+                <div class="btn-taken">🏆 Выполнено! Вы получили +{{ challenge.points }} баллов</div>
+            {% elif user_challenge.status == 'pending' %}
+                <div class="btn-pending">⏳ Отправлено на проверку. Ждём модератора</div>
             {% else %}
-                <a href="/challenges/{{ challenge.pk }}/take/" class="btn-take">
-                    Принять челлендж
-                </a>
+                <div class="btn-taken">✅ Вы участвуете в этом челлендже!</div>
+
+                {% if user_challenge.status == 'rejected' %}
+                    <div class="msg msg-error" style="margin-top:1rem;">
+                        Отклонено: {{ user_challenge.admin_comment|default:"доказательство не подошло" }}. Отправь новое.
+                    </div>
+                {% endif %}
+
+                {% if proof_form %}
+                <form method="post" enctype="multipart/form-data"
+                      action="{% url 'submit_proof' challenge.pk %}" class="proof-form">
+                    {% csrf_token %}
+                    <h3>📸 Отправить доказательство</h3>
+                    {% if proof_form.non_field_errors %}
+                        <div class="msg msg-error">{{ proof_form.non_field_errors.0 }}</div>
+                    {% endif %}
+                    {% for field in proof_form %}
+                    <div class="proof-field">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="field-error">{{ field.errors.0 }}</div>{% endif %}
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn-take">Отправить на проверку</button>
+                </form>
+                {% endif %}
             {% endif %}
         {% else %}
-            <a href="/login/" class="btn-take">Войди чтобы участвовать</a>
+            <a href="{% url 'login' %}?next={{ request.path }}" class="btn-take">Войди чтобы участвовать</a>
         {% endif %}
     </div>
 

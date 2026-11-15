@@ -5,6 +5,7 @@ urlpatterns = [
     path('challenges/', views.challenges_list, name='challenges'),
     path('challenges/<int:pk>/', views.challenge_detail, name='challenge_detail'),
     path('challenges/<int:pk>/take/', views.take_challenge, name='take_challenge'),
+    path('challenges/<int:pk>/submit/', views.submit_proof, name='submit_proof'),
     path('teams/', views.teams_list, name='teams'),
     path('teams/<int:pk>/', views.team_detail, name='team_detail'),
     path('teams/create/', views.create_team, name='create_team'),
