@@ -31,10 +31,41 @@ function toggleLang() {
     dropdown.classList.toggle('show');
 }
 
+// ===== МОБИЛЬНОЕ МЕНЮ =====
+function toggleMobileMenu() {
+    const navMenu = document.getElementById('navMenu');
+    const toggle = document.querySelector('.mobile-menu-toggle');
+
+    if (!navMenu || !toggle) return;
+
+    navMenu.classList.toggle('mobile-open');
+    const isOpen = navMenu.classList.contains('mobile-open');
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+
 // Закрыть dropdown если кликнули вне
 document.addEventListener('click', function(e) {
     const switcher = document.querySelector('.lang-switcher');
     if (switcher && !switcher.contains(e.target)) {
         document.getElementById('langDropdown').classList.remove('show');
     }
+
+    const navMenu = document.getElementById('navMenu');
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    if (navMenu && toggle && !navMenu.contains(e.target) && !toggle.contains(e.target)) {
+        navMenu.classList.remove('mobile-open');
+        toggle.setAttribute('aria-expanded', 'false');
+    }
+});
+
+const navLinks = document.querySelectorAll('.nav-links a');
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        const navMenu = document.getElementById('navMenu');
+        const toggle = document.querySelector('.mobile-menu-toggle');
+        if (navMenu && toggle) {
+            navMenu.classList.remove('mobile-open');
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+    });
 });
