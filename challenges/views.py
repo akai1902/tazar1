@@ -79,8 +79,11 @@ def submit_proof(request, pk):
 
 @login_required
 def teams_list(request):
+    q = request.GET.get('q', '').strip()
     teams = Team.objects.prefetch_related('members')
-    return render(request, 'challenges/teams.html', {'teams': teams})
+    if q:
+        teams = teams.filter(name__icontains=q)
+    return render(request, 'challenges/teams.html', {'teams': teams, 'q': q})
 
 
 @login_required
@@ -106,6 +109,7 @@ def create_team(request):
 
 
 @login_required
+@require_POST
 def join_team(request, pk):
     team = get_object_or_404(Team, pk=pk)
     team.members.add(request.user)
@@ -114,6 +118,7 @@ def join_team(request, pk):
 
 
 @login_required
+@require_POST
 def leave_team(request, pk):
     team = get_object_or_404(Team, pk=pk)
     if team.created_by_id == request.user.id:
@@ -124,10 +129,12 @@ def leave_team(request, pk):
 
 
 @login_required
+@require_POST
 def delete_team(request, pk):
     team = get_object_or_404(Team, pk=pk)
     if team.created_by_id == request.user.id:
         team.delete()
+        messages.success(request, 'Команда удалена.')
     return redirect('teams')
 
 
@@ -146,6 +153,7 @@ def add_member(request, pk):
 
 
 @login_required
+@require_POST
 def remove_member(request, pk, user_pk):
     team = get_object_or_404(Team, pk=pk, created_by=request.user)
     user = get_object_or_404(User, pk=user_pk)

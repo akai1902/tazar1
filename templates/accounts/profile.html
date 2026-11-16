@@ -89,6 +89,7 @@
 
 .status-completed { background: #d1fae5; color: #065f46; }
 .status-progress { background: #fef3c7; color: #92400e; }
+.status-rejected { background: #fee2e2; color: #991b1b; }
 
 .point-item {
     display: flex;
@@ -161,10 +162,10 @@
             <div class="challenge-item">
                 <div class="challenge-icon">♻️</div>
                 <div class="challenge-info">
-                    <div class="challenge-title">{{ uc.challenge.title }}</div>
+                    <div class="challenge-title"><a href="{% url 'challenge_detail' uc.challenge.pk %}" style="color:inherit; text-decoration:none;">{{ uc.challenge.title }}</a></div>
                 </div>
-                <span class="challenge-status {% if uc.status == 'completed' %}status-completed{% else %}status-progress{% endif %}">
-                    {% if uc.status == 'completed' %}✅ Выполнено{% else %}⏳ В процессе{% endif %}
+                <span class="challenge-status {% if uc.status == 'completed' %}status-completed{% elif uc.status == 'rejected' %}status-rejected{% else %}status-progress{% endif %}">
+                    {% if uc.status == 'completed' %}✅{% elif uc.status == 'rejected' %}❌{% else %}⏳{% endif %} {{ uc.get_status_display }}
                 </span>
             </div>
             {% endfor %}

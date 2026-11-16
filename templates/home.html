@@ -4,6 +4,13 @@
 
 {% block title %}{% trans "Жашыл Кыргызстан — Главная" %}{% endblock %}
 
+{% block extra_css %}
+<style>
+html { scroll-behavior: smooth; }
+#popular { scroll-margin-top: 80px; }
+</style>
+{% endblock %}
+
 {% block content %}
 
 <!-- ГЕРОЙ -->
@@ -80,69 +87,47 @@
         </div>
 
         <!-- СКРОЛЛ ИНДИКАТОР -->
-        <div style="margin-top: 3rem; color: rgba(255,255,255,0.6); font-size: 0.85rem;">
-            ↓ Узнать больше
-        </div>
+        <a href="#popular" style="display:inline-block; margin-top:3rem; color:rgba(255,255,255,0.85); font-size:0.9rem; text-decoration:none;">↓ {% trans "Узнать больше" %}</a>
     </div>
 </section>
 
 <section class="stats">
     <div class="stat-item">
-        <div class="stat-number">2,400</div>
+        <div class="stat-number">{{ stats.users }}</div>
         <div class="stat-label"> {% trans "Участников" %}</div>
     </div>
     <div class="stat-item">
-        <div class="stat-number">1,850</div>
-        <div class="stat-label"> {% trans "Челленджей" %}</div>
+        <div class="stat-number">{{ stats.completed }}</div>
+        <div class="stat-label"> {% trans "Челленджей выполнено" %}</div>
     </div>
     <div class="stat-item">
-        <div class="stat-number">320</div>
-        <div class="stat-label"> {% trans "Деревьев посажено" %}</div>
+        <div class="stat-number">{{ stats.points }}</div>
+        <div class="stat-label"> {% trans "Точек на карте" %}</div>
     </div>
     <div class="stat-item">
-        <div class="stat-number">89</div>
+        <div class="stat-number">{{ stats.resolved }}</div>
         <div class="stat-label"> {% trans "Проблем решено" %}</div>
     </div>
 </section>
 
 <!-- ЧЕЛЛЕНДЖИ -->
-<section class="section">
+<section class="section" id="popular">
     <h2 class="section-title"> {% trans "Популярные челленджи" %}</h2>
     <div class="challenge-grid">
-        
+        {% for ch in popular_challenges %}
         <div class="challenge-card">
-            <div class="challenge-card-image" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://ecostan.kg/uploads/posts/2025-03/musor-27.jpg');">
-                <span class="challenge-badge"> Экология</span>
+            <div class="challenge-card-image" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('{% if ch.image %}{{ ch.image.url }}{% elif ch.category == 'ecology' %}https://ecostan.kg/uploads/posts/2025-03/musor-27.jpg{% elif ch.category == 'culture' %}https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=600&q=80{% else %}https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600&q=80{% endif %}');">
+                <span class="challenge-badge">{{ ch.get_category_display }}</span>
             </div>
             <div class="challenge-card-body">
-                <h3>{% trans "Убери мусор в парке" %}</h3>
-                <p>{% trans "Собери мусор в ближайшем парке и загрузи фото-отчёт" %}</p>
-                <a href="/challenges/" class="btn-primary challenge-link">{% trans "Участвовать" %} +50 pts</a>
+                <h3>{{ ch.title }}</h3>
+                <p>{{ ch.description|truncatechars:90 }}</p>
+                <a href="{% url 'challenge_detail' ch.pk %}" class="btn-primary challenge-link">{% trans "Участвовать" %} +{{ ch.points }} pts</a>
             </div>
         </div>
-
-        <div class="challenge-card">
-            <div class="challenge-card-image" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://lifehacker.ru/wp-content/uploads/2022/05/1101307937_1652438580.jpg');">
-                <span class="challenge-badge"> Экология</span>
-            </div>
-            <div class="challenge-card-body">
-                <h3>{% trans "Посади дерево" %}</h3>
-                <p>{% trans "Посади дерево и отметь его на эко-карте" %}</p>
-                <a href="/challenges/" class="btn-primary challenge-link">{% trans "Участвовать" %} +100 pts</a>
-            </div>
-        </div>
-
-        <div class="challenge-card">
-            <div class="challenge-card-image" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://www.infpol.ru/upload/iblock/2d2/clhx93acucx3yhrf2kwc72zig02217is.jpg');">
-                <span class="challenge-badge challenge-badge-blue"> Вода</span>
-            </div>
-            <div class="challenge-card-body">
-                <h3>{% trans "Очисти берег реки" %}</h3>
-                <p>{% trans "Организуй или участвуй в очистке берега реки" %}</p>
-                <a href="/challenges/" class="btn-primary challenge-link">{% trans "Участвовать" %} +150 pts</a>
-            </div>
-        </div>
-
+        {% empty %}
+        <p style="grid-column: 1 / -1; text-align:center; color:var(--text-light);">{% trans "Челленджи скоро появятся" %}</p>
+        {% endfor %}
     </div>
 </section>
 

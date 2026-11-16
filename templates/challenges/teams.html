@@ -95,6 +95,17 @@
     padding: 4rem;
     color: var(--text-light);
 }
+
+.team-search { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+.team-search input {
+    flex: 1; padding: 0.7rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px;
+    background: var(--card-bg); color: var(--text); font-family: inherit; font-size: 1rem;
+}
+.team-search input:focus { outline: none; border-color: var(--primary); }
+
+button.btn-primary, button.btn-outline, button.btn-danger { font-family: inherit; cursor: pointer; }
+button.btn-primary { border: none; font-size: 1rem; }
+button.btn-outline { background: transparent; font-size: 1rem; }
 </style>
 {% endblock %}
 
@@ -119,6 +130,12 @@
         <a href="/teams/create/" class="btn-primary">+ Создать команду</a>
     </div>
 
+    <form method="get" class="team-search">
+        <input type="text" name="q" value="{{ q }}" placeholder="Найти команду по названию...">
+        <button type="submit" class="btn-primary">Найти</button>
+        {% if q %}<a href="{% url 'teams' %}" class="btn-outline">Сбросить</a>{% endif %}
+    </form>
+
     {% if teams %}
     <div class="teams-grid">
         {% for team in teams %}
@@ -134,7 +151,7 @@
                 </div>
                 <div>
                     <div class="team-name">{{ team.name }}</div>
-                    <div class="team-members">{{ team.members.count }} участников</div>
+                    <div class="team-members">Участников: {{ team.members.count }}</div>
                 </div>
             </div>
 
@@ -144,13 +161,13 @@
 
             <div class="team-stats">
                 <div class="team-stat">{{ team.total_points }} pts</div>
-                <div class="team-stat">{{ team.members.count }} участников</div>
+                <div class="team-stat">Участников: {{ team.members.count }}</div>
             </div>
 
             <div class="team-footer">
                 <a href="/teams/{{ team.pk }}/" class="btn-outline">Подробнее</a>
                 {% if user not in team.members.all %}
-                <a href="/teams/{{ team.pk }}/join/" class="btn-primary">Вступить</a>
+                <form method="post" action="{% url 'join_team' team.pk %}" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-primary">Вступить</button></form>
                 {% else %}
                 <span class="badge badge-green">Вы в команде</span>
                 {% endif %}
@@ -168,8 +185,13 @@
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
         </div>
+        {% if q %}
+        <h3>Ничего не найдено</h3>
+        <p>Нет команд по запросу «{{ q }}».</p>
+        {% else %}
         <h3>Команд пока нет</h3>
         <p>Создай первую команду!</p>
+        {% endif %}
         <a href="/teams/create/" class="btn-primary" style="display:inline-block; margin-top:1rem;">Создать команду</a>
     </div>
     {% endif %}

@@ -6,6 +6,11 @@ from django.contrib import messages
 from .forms import RegisterForm, LoginForm
 
 
+from challenges.models import Team
+teams = sorted(Team.objects.prefetch_related('members'),
+               key=lambda t: t.total_points(), reverse=True)
+
+
 def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -59,4 +64,4 @@ def leaderboard_view(request):
 
     User = get_user_model()
     users = User.objects.order_by('-points', 'username')
-    return render(request, 'accounts/leaderboard.html', {'users': users})
+    return render(request, 'accounts/leaderboard.html', {'users': users, 'teams': teams})

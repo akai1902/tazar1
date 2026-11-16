@@ -146,6 +146,10 @@
 
 /* SVG icon helpers */
 .icon { display: inline-flex; align-items: center; flex-shrink: 0; }
+
+button.btn-primary, button.btn-outline, button.btn-danger { font-family: inherit; cursor: pointer; }
+button.btn-primary { border: none; font-size: 1rem; }
+button.btn-outline { background: transparent; font-size: 1rem; }
 </style>
 {% endblock %}
 
@@ -214,7 +218,7 @@
                 </svg>
                 Вы создатель
             </span>
-            <a href="/teams/{{ team.pk }}/delete/" class="btn-danger" onclick="return confirm('Удалить команду?')">
+            <form method="post" action="{% url 'delete_team' team.pk %}" onsubmit="return confirm('Удалить команду?')" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-danger">
                 <!-- trash icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"/>
@@ -224,12 +228,12 @@
                     <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
                 </svg>
                 Удалить команду
-            </a>
+            </button></form>
         {% else %}
-            <a href="/teams/{{ team.pk }}/leave/" class="btn-outline" onclick="return confirm('Покинуть команду?')">Покинуть команду</a>
+            <form method="post" action="{% url 'leave_team' team.pk %}" onsubmit="return confirm('Покинуть команду?')" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-outline">Покинуть команду</button></form>
         {% endif %}
     {% else %}
-        <a href="/teams/{{ team.pk }}/join/" class="btn-primary">Вступить в команду</a>
+        <form method="post" action="{% url 'join_team' team.pk %}" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-primary">Вступить в команду</button></form>
     {% endif %}
 </div>
 
@@ -271,16 +275,13 @@
                 <div class="member-points">{{ member.points }} pts</div>
             </div>
             {% if user == team.created_by and member != team.created_by %}
-            <a href="/teams/{{ team.pk }}/remove-member/{{ member.pk }}/" 
-               class="btn-danger" 
-               style="padding:0.3rem 0.6rem; font-size:0.8rem;"
-               onclick="return confirm('Удалить участника?')">
+            <form method="post" action="{% url 'remove_member' team.pk member.pk %}" onsubmit="return confirm('Удалить участника?')" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-danger" style="padding:0.3rem 0.6rem; font-size:0.8rem;">
                 <!-- x icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"/>
                     <line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
-            </a>
+            </button></form>
             {% endif %}
         </div>
         {% endfor %}
