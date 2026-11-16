@@ -171,6 +171,16 @@ button.btn-take { border: none; font-family: inherit; }
                       action="{% url 'submit_proof' challenge.pk %}" class="proof-form">
                     {% csrf_token %}
                     <h3>📸 Отправить доказательство</h3>
+                    {% if challenge.requires_point %}
+                    <div class="msg msg-info">
+                        📍 Для этого челленджа нужна точка на карте{% if challenge.point_type %} (тип: {{ challenge.get_point_type_display }}){% endif %}.
+                        {% if open_points %}
+                            Выбери ниже проблему, которую ты решил.
+                        {% else %}
+                            Сейчас на карте нет открытых проблем. <a href="{% url 'ecomap' %}" style="color:inherit; text-decoration:underline;">Отметь проблему на карте</a> и вернись сюда.
+                        {% endif %}
+                    </div>
+                    {% endif %}
                     {% if proof_form.non_field_errors %}
                         <div class="msg msg-error">{{ proof_form.non_field_errors.0 }}</div>
                     {% endif %}

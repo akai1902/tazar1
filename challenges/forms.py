@@ -31,11 +31,23 @@ class ProofForm(forms.ModelForm):
             'proof_comment': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Что ты сделал?'}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, challenge=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['ecopoint'].label_from_instance = (
-            lambda p: f'{p.title} ({p.get_type_display()})'
-        )
+        field = self.fields['ecopoint']
+        field.label_from_instance = lambda p: f'{p.title} ({p.get_type_display()})'
+
+        # показываем только точки подходящего типа (река -> «Загрязнённая река» и т.д.)
+        if challenge is not None and challenge.point_type:
+            field.queryset = field.queryset.filter(type=challenge.point_type)
+
+        # если челленджу нужна точка, без неё отправить доказательство нельзя
+        if challenge is not None and challenge.requires_point:
+            field.required = True
+            field.empty_label = '— выбери точку —'
+            field.label = 'Какую проблему на карте ты решил? (обязательно)'
+            field.error_messages['required'] = (
+                'Выбери точку на карте. Если подходящей нет, сначала отметь проблему на карте.'
+            )
 
     def clean_proof_photo(self):
         photo = self.cleaned_data.get('proof_photo')

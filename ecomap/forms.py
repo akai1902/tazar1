@@ -22,6 +22,18 @@ class EcoPointForm(forms.ModelForm):
             'longitude': 'Долгота',
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # фото «ДО» обязательно: по нему понятно, что нужно сделать на месте
+        self.fields['photo'].required = True
+        self.fields['photo'].error_messages['required'] = 'Прикрепи фото проблемы.'
+
+    def clean_title(self):
+        title = self.cleaned_data['title'].strip()
+        if len(title) < 3:
+            raise forms.ValidationError('Слишком короткое название (минимум 3 символа).')
+        return title
+
     def clean_photo(self):
         photo = self.cleaned_data.get('photo')
         if isinstance(photo, UploadedFile) and photo.size > MAX_UPLOAD:

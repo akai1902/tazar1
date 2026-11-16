@@ -1,9 +1,14 @@
+from datetime import timedelta
+
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .forms import EcoPointForm
 from .models import EcoPoint
+
+DAILY_LIMIT = 10  # точек в сутки на одного пользователя (защита от мусора)
 
 
 def _error(message, status=400):
@@ -35,6 +40,13 @@ def ecomap_view(request):
 def add_point(request):
     if not request.user.is_authenticated:
         return _error('Нужно войти в аккаунт.', status=401)
+
+    if not request.user.is_staff:
+        recent = EcoPoint.objects.filter(
+            reported_by=request.user, created_at__gte=timezone.now() - timedelta(days=1)
+        ).count()
+        if recent >= DAILY_LIMIT:
+            return _error(f'Лимит: не больше {DAILY_LIMIT} точек в сутки.', status=429)
 
     form = EcoPointForm(request.POST, request.FILES)
     if not form.is_valid():

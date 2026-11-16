@@ -160,6 +160,26 @@ body.dark-mode .filter-panel {
     z-index: 1000;
     display: none;
 }
+
+/* ПОИСК ПО АДРЕСУ */
+.map-search { position: absolute; top: 80px; right: 20px; z-index: 1000; width: 340px; max-width: calc(100% - 40px); }
+.search-box { display: flex; gap: 0.4rem; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-radius: 14px; padding: 0.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+body.dark-mode .search-box, body.dark-mode .search-results { background: rgba(22,27,34,0.95); }
+.search-box input { flex: 1; min-width: 0; border: 2px solid #e5e7eb; border-radius: 10px; padding: 0.55rem 0.8rem; font: inherit; background: var(--bg); color: var(--text); }
+.search-box input:focus { outline: none; border-color: var(--primary); }
+.search-box button { border: none; border-radius: 10px; padding: 0 0.8rem; cursor: pointer; background: var(--primary); color: white; font-size: 1rem; }
+.search-box button.geo { background: var(--bg); color: var(--text); border: 2px solid #e5e7eb; }
+.search-results { margin-top: 0.5rem; background: rgba(255,255,255,0.97); border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); max-height: 50vh; overflow-y: auto; padding: 0.3rem; }
+.search-results[hidden] { display: none; }
+.sr-head { font-size: 0.75rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; padding: 0.5rem 0.7rem 0.2rem; }
+.sr-row { display: flex; align-items: center; gap: 0.4rem; border-radius: 10px; }
+.sr-row:hover { background: var(--bg); }
+.sr-text { flex: 1; cursor: pointer; padding: 0.5rem 0.7rem; min-width: 0; }
+.sr-title { font-weight: 600; font-size: 0.9rem; overflow-wrap: anywhere; }
+.sr-sub { font-size: 0.78rem; color: var(--text-light); }
+.sr-add { border: none; background: var(--primary); color: white; border-radius: 8px; width: 32px; height: 32px; font-size: 1.1rem; cursor: pointer; flex-shrink: 0; margin-right: 0.3rem; }
+.sr-note { padding: 0.7rem; font-size: 0.85rem; color: var(--text-light); }
+@media (max-width: 700px) { .map-search { left: 10px; right: 10px; width: auto; max-width: none; top: 70px; } }
 </style>
 {% endblock %}
 
@@ -245,6 +265,17 @@ body.dark-mode .filter-panel {
     {% endif %}
 </div>
 
+    <!-- ПОИСК ПО АДРЕСУ -->
+    <div class="map-search">
+        <form class="search-box" onsubmit="searchPlaces(event); return false;">
+            <input type="text" id="searchInput" placeholder="Город, село, улица…" autocomplete="off"
+                   oninput="if (!this.value.trim()) document.getElementById('searchResults').hidden = true;">
+            <button type="submit" title="Найти">🔍</button>
+            <button type="button" class="geo" title="Моё местоположение" onclick="useMyLocation()">📍</button>
+        </form>
+        <div class="search-results" id="searchResults" hidden></div>
+    </div>
+
     <!-- ПОДСКАЗКА -->
     <div class="map-hint" id="mapHint">📍 Кликни на карту чтобы добавить точку</div>
 
@@ -281,7 +312,7 @@ body.dark-mode .filter-panel {
             <option value="air">Загрязнение воздуха</option>
         </select>
         <input type="url" class="modal-input" id="pointVideo" placeholder="Ссылка на видео (необязательно)">
-        <label style="display:block; font-size:0.85rem; color:var(--text-light); margin-bottom:0.3rem;">Фото (необязательно, до 5 МБ)</label>
+        <label style="display:block; font-size:0.85rem; color:var(--text-light); margin-bottom:0.3rem;">Фото проблемы (обязательно, до 5 МБ)</label>
         <input type="file" class="modal-input" id="pointPhoto" accept="image/*">
         <div class="modal-btns">
             <button class="btn-cancel" onclick="closeModal()" style="display:flex; align-items:center; justify-content:center; gap:0.5rem;">
@@ -306,6 +337,7 @@ body.dark-mode .filter-panel {
 {% block extra_js %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 {{ points|json_script:"points-data" }}
+<script>const IS_AUTH = {{ user.is_authenticated|yesno:"true,false" }};</script>
 <script>
 const pointsData = JSON.parse(document.getElementById('points-data').textContent);
 let map, markers = [], addingMode = false, tempLat, tempLng;
@@ -401,6 +433,7 @@ function addMarkers(points) {
                 </div>
             `);
         
+        marker.pointId = p.id;
         markers.push(marker);
 
     });
@@ -437,6 +470,162 @@ map.on('click', function(e) {
     document.getElementById('modalOverlay').classList.add('show');
 });
 
+// ───── ПОИСК ПО АДРЕСУ (OpenStreetMap Nominatim, только по кнопке «Найти») ─────
+let searchMarker = null;
+
+function showSearchMarker(lat, lng) {
+    if (searchMarker) map.removeLayer(searchMarker);
+    searchMarker = L.circleMarker([lat, lng], {
+        radius: 9, color: '#2D6A4F', weight: 3, fillColor: '#74C69D', fillOpacity: 0.7
+    }).addTo(map);
+}
+
+function goTo(lat, lng, zoom) {
+    map.flyTo([lat, lng], zoom || 17);
+    showSearchMarker(lat, lng);
+}
+
+// открыть форму добавления точки в выбранном месте (без клика по карте)
+function startAddAt(lat, lng) {
+    tempLat = lat;
+    tempLng = lng;
+    addingMode = false;
+    document.getElementById('mapHint').style.display = 'none';
+    showSearchMarker(lat, lng);
+    document.getElementById('modalOverlay').classList.add('show');
+}
+
+function srNote(text) {
+    const d = document.createElement('div');
+    d.className = 'sr-note';
+    d.textContent = text;
+    return d;
+}
+
+function srHead(text) {
+    const d = document.createElement('div');
+    d.className = 'sr-head';
+    d.textContent = text;
+    return d;
+}
+
+// строка результата; весь пользовательский текст вставляется через textContent (без XSS)
+function srRow(title, subtitle, onGo, onAdd) {
+    const row = document.createElement('div');
+    row.className = 'sr-row';
+
+    const text = document.createElement('div');
+    text.className = 'sr-text';
+    text.onclick = onGo;
+    const t = document.createElement('div');
+    t.className = 'sr-title';
+    t.textContent = title;
+    text.appendChild(t);
+    if (subtitle) {
+        const s = document.createElement('div');
+        s.className = 'sr-sub';
+        s.textContent = subtitle;
+        text.appendChild(s);
+    }
+    row.appendChild(text);
+
+    if (onAdd && IS_AUTH) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'sr-add';
+        b.title = 'Добавить точку здесь';
+        b.textContent = '＋';
+        b.onclick = onAdd;
+        row.appendChild(b);
+    }
+    return row;
+}
+
+async function searchPlaces(e) {
+    e.preventDefault();
+    const q = document.getElementById('searchInput').value.trim();
+    const box = document.getElementById('searchResults');
+    if (q.length < 2) return;
+
+    box.hidden = false;
+    box.replaceChildren(srNote('Ищу…'));
+
+    // 1) точки, которые уже есть на карте
+    const ql = q.toLowerCase();
+    const existing = pointsData
+        .filter(p => (p.title + ' ' + p.description).toLowerCase().includes(ql))
+        .slice(0, 5);
+
+    // 2) адреса: город, село, пгт, улица
+    let places = [], failed = false;
+    try {
+        const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&countrycodes=kg&accept-language=ru&q='
+            + encodeURIComponent(q);
+        const r = await fetch(url);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        places = await r.json();
+    } catch (err) {
+        console.error('Поиск адреса не удался:', err);
+        failed = true;
+    }
+
+    box.replaceChildren();
+    if (existing.length) {
+        box.appendChild(srHead('Уже на карте'));
+        existing.forEach(p => box.appendChild(srRow(
+            p.title,
+            p.status === 'resolved' ? '✅ Решено' : '⚠️ Требует внимания',
+            () => {
+                map.flyTo([p.lat, p.lng], 17);
+                const m = markers.find(m => m.pointId === p.id);
+                if (m) map.once('moveend', () => m.openPopup());
+            },
+            null
+        )));
+    }
+    if (places.length) {
+        box.appendChild(srHead('Адреса'));
+        places.forEach(pl => {
+            const lat = parseFloat(pl.lat), lng = parseFloat(pl.lon);
+            box.appendChild(srRow(
+                pl.name || pl.display_name.split(',')[0],
+                pl.display_name,
+                () => goTo(lat, lng, 16),
+                () => startAddAt(lat, lng)
+            ));
+        });
+        if (!IS_AUTH) box.appendChild(srNote('Чтобы добавить точку, войди в аккаунт.'));
+    }
+    if (!existing.length && !places.length) {
+        box.appendChild(srNote(failed
+            ? 'Не удалось выполнить поиск. Проверь интернет и попробуй ещё раз.'
+            : 'Ничего не найдено. Попробуй указать город или улицу.'));
+    }
+}
+
+// «Я здесь»: быстро поставить точку там, где ты стоишь
+function useMyLocation() {
+    const box = document.getElementById('searchResults');
+    box.hidden = false;
+    if (!navigator.geolocation) {
+        box.replaceChildren(srNote('Браузер не умеет определять местоположение.'));
+        return;
+    }
+    box.replaceChildren(srNote('Определяю местоположение…'));
+    navigator.geolocation.getCurrentPosition(pos => {
+        const lat = pos.coords.latitude, lng = pos.coords.longitude;
+        goTo(lat, lng, 17);
+        box.replaceChildren(
+            srHead('Ты здесь'),
+            srRow('📍 Моё местоположение', lat.toFixed(5) + ', ' + lng.toFixed(5),
+                  () => goTo(lat, lng, 17), () => startAddAt(lat, lng))
+        );
+        if (!IS_AUTH) box.appendChild(srNote('Чтобы добавить точку, войди в аккаунт.'));
+    }, () => {
+        box.replaceChildren(srNote('Не удалось определить местоположение. Разреши доступ в браузере или введи адрес.'));
+    }, {enableHighAccuracy: true, timeout: 10000});
+}
+
 function closeModal() {
     document.getElementById('modalOverlay').classList.remove('show');
     document.getElementById('pointTitle').value = '';
@@ -458,10 +647,9 @@ function savePoint() {
     fd.append('longitude', tempLng);
 
     const photo = document.getElementById('pointPhoto').files[0];
-    if (photo) {
-        if (photo.size > 5 * 1024 * 1024) { alert('Фото больше 5 МБ'); return; }
-        fd.append('photo', photo);
-    }
+    if (!photo) { alert('Прикрепи фото проблемы: так понятно, что нужно сделать на месте.'); return; }
+    if (photo.size > 5 * 1024 * 1024) { alert('Фото больше 5 МБ'); return; }
+    fd.append('photo', photo);
 
     // Content-Type НЕ ставим вручную: браузер сам добавит boundary для FormData
     fetch('/ecomap/add/', {

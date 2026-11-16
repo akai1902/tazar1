@@ -4,6 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
+from ecomap.models import EcoPoint
+
 from .forms import ProofForm
 from .models import Challenge, Team, UserChallenge
 
@@ -29,11 +31,19 @@ def _detail_context(request, challenge, proof_form=None):
             user=request.user, challenge=challenge
         ).first()
         if proof_form is None and user_challenge and user_challenge.status in ('in_progress', 'rejected'):
-            proof_form = ProofForm()
+            proof_form = ProofForm(challenge=challenge)
+    # сколько сейчас подходящих открытых точек (для подсказки в форме)
+    open_points = 0
+    if proof_form:
+        qs = EcoPoint.objects.filter(status='active')
+        if challenge.point_type:
+            qs = qs.filter(type=challenge.point_type)
+        open_points = qs.count()
     return {
         'challenge': challenge,
         'user_challenge': user_challenge,
         'proof_form': proof_form,
+        'open_points': open_points,
     }
 
 
@@ -62,7 +72,7 @@ def submit_proof(request, pk):
         messages.error(request, 'Это задание уже отправлено на проверку или выполнено.')
         return redirect('challenge_detail', pk=pk)
 
-    form = ProofForm(request.POST, request.FILES, instance=uc)
+    form = ProofForm(request.POST, request.FILES, instance=uc, challenge=challenge)
     if form.is_valid():
         uc = form.save(commit=False)
         uc.status = 'pending'

@@ -1,14 +1,20 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
 
-from .forms import RegisterForm, LoginForm
+from .forms import LoginForm, RegisterForm
 
 
-from challenges.models import Team
-teams = sorted(Team.objects.prefetch_related('members'),
-               key=lambda t: t.total_points(), reverse=True)
+def _next_url(request):
+    """Куда вернуть после входа (?next=...). Только на наш же сайт."""
+    url = request.POST.get('next') or request.GET.get('next') or ''
+    if url and url_has_allowed_host_and_scheme(
+        url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return url
+    return None
 
 
 def register_view(request):
@@ -17,7 +23,7 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('home')
+            return redirect(_next_url(request) or 'home')
         messages.error(request, 'Исправьте ошибки в форме')
     else:
         form = RegisterForm()
@@ -33,7 +39,8 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
-                return redirect('home')
+                # раньше всегда кидало на главную, теперь возвращает туда, откуда пришёл
+                return redirect(_next_url(request) or 'home')
             messages.error(request, 'Неверный логин или пароль')
     else:
         form = LoginForm()
@@ -60,8 +67,12 @@ def profile_view(request):
 
 
 def leaderboard_view(request):
-    from django.contrib.auth import get_user_model
+    from challenges.models import Team
 
-    User = get_user_model()
-    users = User.objects.order_by('-points', 'username')
+    users = get_user_model().objects.order_by('-points', 'username')
+    teams = sorted(
+        Team.objects.prefetch_related('members'),
+        key=lambda t: t.total_points(),
+        reverse=True,
+    )
     return render(request, 'accounts/leaderboard.html', {'users': users, 'teams': teams})

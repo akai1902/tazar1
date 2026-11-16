@@ -6,9 +6,9 @@ from .models import Challenge, Team, UserChallenge
 
 @admin.register(Challenge)
 class ChallengeAdmin(admin.ModelAdmin):
-    list_display = ('title', 'category', 'difficulty', 'points', 'is_active', 'created_at')
+    list_display = ('title', 'category', 'difficulty', 'points', 'point_type', 'requires_point', 'is_active', 'created_at')
     list_filter = ('category', 'difficulty', 'is_active')
-    list_editable = ('is_active',)          # открыть/закрыть челлендж одним кликом
+    list_editable = ('is_active', 'requires_point', 'point_type')   # открыть/закрыть челлендж, нужна ли точка
     search_fields = ('title',)
 
 
@@ -17,8 +17,27 @@ class UserChallengeAdmin(admin.ModelAdmin):
     list_display = ('user', 'challenge', 'status', 'ecopoint', 'proof_preview', 'points_awarded', 'taken_at')
     list_filter = ('status', 'challenge')
     search_fields = ('user__username', 'challenge__title')
-    readonly_fields = ('proof_preview', 'points_awarded', 'completed_at', 'taken_at')
+    fields = ('user', 'challenge', 'status', 'admin_comment', 'ecopoint',
+              'point_big', 'proof_big', 'proof_video_url', 'proof_comment',
+              'points_awarded', 'taken_at', 'completed_at')
+    readonly_fields = ('point_big', 'proof_big', 'points_awarded', 'completed_at', 'taken_at')
     actions = ['approve_selected', 'reject_selected']
+
+    # большие превью «до / после»: открываются в новой вкладке, из админки выходить не нужно
+    IMG = ('<a href="{0}" target="_blank" rel="noopener">'
+           '<img src="{1}" style="max-height:320px;max-width:100%;border-radius:8px"></a>')
+
+    @admin.display(description='Фото ДО (точка на карте)')
+    def point_big(self, obj):
+        if obj.ecopoint_id and obj.ecopoint.photo:
+            return format_html(self.IMG, obj.ecopoint.photo.url, obj.ecopoint.photo.url)
+        return '—'
+
+    @admin.display(description='Фото ПОСЛЕ (доказательство)')
+    def proof_big(self, obj):
+        if obj.proof_photo:
+            return format_html(self.IMG, obj.proof_photo.url, obj.proof_photo.url)
+        return '—'
 
     @admin.display(description='Фото')
     def proof_preview(self, obj):
@@ -31,8 +50,15 @@ class UserChallengeAdmin(admin.ModelAdmin):
 
     @admin.action(description='✅ Одобрить выбранные (начислить баллы, точка станет зелёной)')
     def approve_selected(self, request, queryset):
-        done = sum(1 for uc in queryset.select_related('user', 'challenge') if uc.approve())
-        self.message_user(request, f'Одобрено: {done}', messages.SUCCESS)
+        done = 0
+        for uc in queryset.select_related('user', 'challenge', 'ecopoint'):
+            problem = uc.approval_problem()
+            if problem:
+                self.message_user(request, f'Пропущено: {uc.user} — {uc.challenge}: {problem}.', messages.WARNING)
+            elif uc.approve():
+                done += 1
+        if done:
+            self.message_user(request, f'Одобрено: {done}', messages.SUCCESS)
 
     @admin.action(description='❌ Отклонить выбранные')
     def reject_selected(self, request, queryset):
