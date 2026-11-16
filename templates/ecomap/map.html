@@ -416,6 +416,9 @@ function addMarkers(points) {
         const media =
             (p.photo ? `<img src="${esc(p.photo)}" alt="" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px; margin-bottom:0.5rem;">` : '') +
             (p.video_url ? `<a href="${esc(p.video_url)}" target="_blank" rel="noopener noreferrer">🎥 Смотреть видео</a><br>` : '');
+        const solveBtn = p.status === 'active'
+            ? `<br><br><a href="/challenges/?point=${p.id}" style="display:block; text-align:center; background:#2D6A4F; color:white; padding:0.4rem 0.8rem; border-radius:6px; text-decoration:none; font-weight:600;">🎯 Решить эту проблему</a>`
+            : '';
         const delBtn = p.can_delete
             ? `<br><br><button onclick="deletePoint(${p.id})" style="background:#ef4444; color:white; border:none; padding:0.4rem 0.8rem; border-radius:6px; cursor:pointer; width:100%;">🗑️ Удалить точку</button>`
             : '';
@@ -429,7 +432,7 @@ function addMarkers(points) {
                     <small>${esc(p.description)}</small><br><br>
                     <span>👤 ${esc(p.reported_by)}</span><br>
                     <span>${p.status === 'resolved' ? '✅ Решено' : '⚠️ Требует внимания'}</span>
-                    ${delBtn}
+                    ${solveBtn}${delBtn}
                 </div>
             `);
         
@@ -475,8 +478,14 @@ let searchMarker = null;
 
 function showSearchMarker(lat, lng) {
     if (searchMarker) map.removeLayer(searchMarker);
-    searchMarker = L.circleMarker([lat, lng], {
-        radius: 9, color: '#2D6A4F', weight: 3, fillColor: '#74C69D', fillOpacity: 0.7
+    // заметная булавка вместо тонкого кольца
+    searchMarker = L.marker([lat, lng], {
+        icon: L.divIcon({
+            className: '',
+            html: '<div style="font-size:34px; line-height:34px; transform:translate(-50%,-100%); filter:drop-shadow(0 2px 3px rgba(0,0,0,0.4));">📍</div>',
+            iconSize: [0, 0]
+        }),
+        interactive: false
     }).addTo(map);
 }
 

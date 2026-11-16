@@ -2,6 +2,7 @@ from django import forms
 from django.core.files.uploadedfile import UploadedFile
 
 from ecomap.models import EcoPoint
+from ecomap.validators import validate_video_url
 from .models import UserChallenge
 
 MAX_UPLOAD = 5 * 1024 * 1024  # 5 МБ
@@ -22,7 +23,7 @@ class ProofForm(forms.ModelForm):
         fields = ['proof_photo', 'proof_video_url', 'proof_comment', 'ecopoint']
         labels = {
             'proof_photo': 'Фото-доказательство (до 5 МБ)',
-            'proof_video_url': 'Ссылка на видео (необязательно)',
+            'proof_video_url': 'Ссылка на видео: YouTube, Vimeo, TikTok или Instagram (необязательно)',
             'proof_comment': 'Комментарий (необязательно)',
         }
         widgets = {
@@ -33,6 +34,8 @@ class ProofForm(forms.ModelForm):
 
     def __init__(self, *args, challenge=None, **kwargs):
         super().__init__(*args, **kwargs)
+        # ссылка на видео: только проверенные видеосервисы
+        self.fields['proof_video_url'].validators.append(validate_video_url)
         field = self.fields['ecopoint']
         field.label_from_instance = lambda p: f'{p.title} ({p.get_type_display()})'
 

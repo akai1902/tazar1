@@ -61,7 +61,7 @@ html { scroll-behavior: smooth; }
         ">{% trans "Отмечай проблемы на карте. Выполняй челленджи. Меняй страну." %}</p>
 
         <div class="hero-btns" style="gap: 1rem; justify-content: center; display: flex;">
-            <a href="/register/" style="
+            <a href="{% if user.is_authenticated %}{% url 'challenges' %}{% else %}{% url 'register' %}{% endif %}" style="
                 background: #2D6A4F;
                 color: white;
                 padding: 1rem 2.5rem;
@@ -71,7 +71,7 @@ html { scroll-behavior: smooth; }
                 font-size: 1.1rem;
                 transition: all 0.3s;
                 box-shadow: 0 4px 20px rgba(45,106,79,0.5);
-            ">{% trans "Присоединиться" %} →</a>
+            ">{% if user.is_authenticated %}{% trans "К челленджам" %}{% else %}{% trans "Присоединиться" %}{% endif %} →</a>
             <a href="/ecomap/" style="
                 background: rgba(255,255,255,0.15);
                 backdrop-filter: blur(10px);

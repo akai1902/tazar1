@@ -144,11 +144,21 @@ button.btn-take { border: none; font-family: inherit; }
         <div class="points-big">🟡 +{{ challenge.points }} баллов за выполнение</div>
 
         {% if user.is_authenticated %}
+            {% if selected_point %}
+                <div class="msg msg-info">📍 Точка на карте: <b>«{{ selected_point.title }}»</b> ({{ selected_point.get_type_display }})</div>
+            {% endif %}
+            {% if completed_count %}
+                <div class="msg msg-success">🏆 Выполнено раз: {{ completed_count }}. За каждую новую точку баллы начисляются снова.</div>
+            {% endif %}
+            {% if pending_count %}
+                <div class="msg msg-info">⏳ На проверке у модератора: {{ pending_count }}</div>
+            {% endif %}
             {% if not user_challenge %}
                 {% if challenge.is_active %}
                     <form method="post" action="{% url 'take_challenge' challenge.pk %}">
                         {% csrf_token %}
-                        <button type="submit" class="btn-take">Принять челлендж</button>
+                        {% if selected_point %}<input type="hidden" name="point" value="{{ selected_point.pk }}">{% endif %}
+                        <button type="submit" class="btn-take">{% if completed_count or pending_count %}Принять снова{% else %}Принять челлендж{% endif %}</button>
                     </form>
                 {% else %}
                     <div class="btn-pending" style="background:#fee2e2; color:#991b1b;">Челлендж закрыт</div>
@@ -196,7 +206,7 @@ button.btn-take { border: none; font-family: inherit; }
                 {% endif %}
             {% endif %}
         {% else %}
-            <a href="{% url 'login' %}?next={{ request.path }}" class="btn-take">Войди чтобы участвовать</a>
+            <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" class="btn-take">Войди чтобы участвовать</a>
         {% endif %}
     </div>
 

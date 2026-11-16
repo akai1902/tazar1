@@ -18,6 +18,8 @@ def _next_url(request):
 
 
 def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -31,6 +33,8 @@ def register_view(request):
 
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():

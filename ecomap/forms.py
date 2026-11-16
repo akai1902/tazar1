@@ -2,6 +2,7 @@ from django import forms
 from django.core.files.uploadedfile import UploadedFile
 
 from .models import EcoPoint
+from .validators import validate_video_url
 
 MAX_UPLOAD = 5 * 1024 * 1024  # 5 МБ
 
@@ -27,6 +28,8 @@ class EcoPointForm(forms.ModelForm):
         # фото «ДО» обязательно: по нему понятно, что нужно сделать на месте
         self.fields['photo'].required = True
         self.fields['photo'].error_messages['required'] = 'Прикрепи фото проблемы.'
+        # ссылка на видео: только проверенные видеосервисы
+        self.fields['video_url'].validators.append(validate_video_url)
 
     def clean_title(self):
         title = self.cleaned_data['title'].strip()

@@ -160,6 +160,18 @@
 .empty-state div { font-size: 3rem; margin-bottom: 1rem; }
 
 .challenge-card.hidden { display: none; }
+
+.point-banner { max-width: 1200px; margin: 1.5rem auto 0; padding: 1rem 2rem; background: #e0f2fe; color: #075985; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+body.dark-mode .point-banner { background: #0c2d48; color: #bae6fd; }
+.open-points { margin-top: 2rem; background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow); padding: 1.5rem; }
+.op-title { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+.op-sub { color: var(--text-light); font-size: 0.9rem; margin: 0.3rem 0 1rem; }
+.op-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem 0; border-top: 1px solid var(--bg); }
+.op-text { flex: 1; min-width: 0; }
+.op-name { font-weight: 600; overflow-wrap: anywhere; }
+.op-meta { color: var(--text-light); font-size: 0.8rem; }
+.op-empty { color: var(--text-light); font-size: 0.9rem; }
+.op-empty a { color: var(--primary); font-weight: 600; }
 </style>
 {% endblock %}
 
@@ -169,6 +181,14 @@
     <h1> ♻ Эко-Челленджи</h1>
     <p>Выполняй задания, зарабатывай баллы и меняй Кыргызстан</p>
 </div>
+
+{% if point %}
+<div class="point-banner">
+    <div>📍 Решаем проблему: <b>«{{ point.title }}»</b> ({{ point.get_type_display }})<br>
+        <small>Выбери подходящий челлендж ниже.</small></div>
+    <a href="{% url 'challenges' %}" class="btn-outline">Сбросить</a>
+</div>
+{% endif %}
 
 <!-- ФИЛЬТРЫ -->
 <div class="filter-bar" style="max-width:1200px; margin: 1.5rem auto;">
@@ -214,7 +234,7 @@
                     <p class="challenge-card-text">{{ challenge.description|truncatechars:80 }}</p>
                     <div class="challenge-card-footer">
                         <span class="points-badge">🟡 +{{ challenge.points }} pts</span>
-                        <a href="/challenges/{{ challenge.pk }}/" class="btn-primary">Подробнее</a>
+                        <a href="{% url 'challenge_detail' challenge.pk %}{% if point %}?point={{ point.pk }}{% endif %}" class="btn-primary">{% if point %}Выбрать{% else %}Подробнее{% endif %}</a>
                     </div>
                 </div>
             </div>
@@ -225,6 +245,24 @@
             <div>♻️</div>
             <h3>Челленджей пока нет</h3>
             <p>Администратор скоро добавит задания!</p>
+        </div>
+        {% endif %}
+        {% if not point %}
+        <div class="open-points">
+            <h2 class="op-title">🗺️ Открытые проблемы на карте</h2>
+            <p class="op-sub">Выбери проблему, которую хочешь решить: подберём подходящий челлендж.</p>
+            {% for p in open_points %}
+            <div class="op-item">
+                <span>{% if p.type == 'trash' %}🔴{% elif p.type == 'water' %}🔵{% elif p.type == 'forest' %}🟠{% else %}🟣{% endif %}</span>
+                <div class="op-text">
+                    <div class="op-name">{{ p.title }}</div>
+                    <div class="op-meta">{{ p.get_type_display }} · {{ p.reported_by.username }}</div>
+                </div>
+                <a href="{% url 'challenges' %}?point={{ p.pk }}" class="btn-primary">Решить</a>
+            </div>
+            {% empty %}
+            <p class="op-empty">Открытых проблем пока нет. <a href="{% url 'ecomap' %}">Отметь первую на карте →</a></p>
+            {% endfor %}
         </div>
         {% endif %}
     </div>
@@ -272,7 +310,7 @@
                 </svg>
                 Всего челленджей
             </div>
-            <span class="lb-points">{{ challenges.count }}</span>
+            <span class="lb-points">{{ total_challenges }}</span>
         </div>
         <div class="leaderboard-item">
             <div style="display:flex; align-items:center; gap:0.5rem;">
