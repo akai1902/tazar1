@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Профиль — TAZAR{% endblock %}
+{% block title %}{% trans "Профиль" %} — TAZAR{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -134,20 +135,20 @@
     <div class="profile-avatar">👤</div>
     <div class="profile-name">{{ user.username }}</div>
     <div class="profile-city">
-        {% if user.city %}📍 {{ user.city }}{% else %}📍 Кыргызстан{% endif %}
+        {% if user.city %}📍 {{ user.city }}{% else %}📍 {% trans "Кыргызстан" %}{% endif %}
     </div>
     <div class="profile-stats">
         <div class="profile-stat">
             <div class="profile-stat-num">{{ user.points }}</div>
-            <div class="profile-stat-label">🟡 Баллов</div>
+            <div class="profile-stat-label">🟡 {% trans "Баллов" %}</div>
         </div>
         <div class="profile-stat">
             <div class="profile-stat-num">{{ user_challenges.count }}</div>
-            <div class="profile-stat-label">♻️ Челленджей</div>
+            <div class="profile-stat-label">♻️ {% trans "Челленджей" %}</div>
         </div>
         <div class="profile-stat">
             <div class="profile-stat-num">{{ user_points.count }}</div>
-            <div class="profile-stat-label">📍 Точек на карте</div>
+            <div class="profile-stat-label">📍 {% trans "Точек на карте" %}</div>
         </div>
     </div>
 </div>
@@ -156,7 +157,7 @@
 
     <!-- МОИ ЧЕЛЛЕНДЖИ -->
     <div class="profile-card">
-        <h3>♻️ Мои челленджи</h3>
+        <h3>♻️ {% trans "Мои челленджи" %}</h3>
         {% if user_challenges %}
             {% for uc in user_challenges %}
             <div class="challenge-item">
@@ -170,13 +171,13 @@
             </div>
             {% endfor %}
         {% else %}
-            <p class="empty-text">Ты ещё не участвуешь в челленджах 😊</p>
+            <p class="empty-text">{% trans "Ты ещё не участвуешь в челленджах" %} 😊</p>
         {% endif %}
     </div>
 
     <!-- МОИ ТОЧКИ НА КАРТЕ -->
     <div class="profile-card">
-        <h3>🗺️ Мои точки на карте</h3>
+        <h3>🗺️ {% trans "Мои точки на карте" %}</h3>
         {% if user_points %}
             {% for point in user_points %}
             <div class="point-item">
@@ -191,18 +192,18 @@
             </div>
             {% endfor %}
         {% else %}
-            <p class="empty-text">Ты ещё не отметил точки на карте 🗺️</p>
+            <p class="empty-text">{% trans "Ты ещё не отметил точки на карте" %} 🗺️</p>
         {% endif %}
     </div>
 
     <!-- ЗНАЧКИ -->
     <div class="profile-card" style="grid-column: 1 / -1;">
-        <h3>🏅 Мои значки</h3>
+        <h3>🏅 {% trans "Мои значки" %}</h3>
         <div class="badges-grid">
-            <div class="badge-item" title="Первый шаг">🌱</div>
-            <div class="badge-item" title="Эко-воин">♻️</div>
-            <div class="badge-item" title="Страж природы">🏔️</div>
-            <div class="badge-item" title="Защитник воды">💧</div>
+            <div class="badge-item" title="{% trans 'Первый шаг' %}">🌱</div>
+            <div class="badge-item" title="{% trans 'Эко-воин' %}">♻️</div>
+            <div class="badge-item" title="{% trans 'Страж природы' %}">🏔️</div>
+            <div class="badge-item" title="{% trans 'Защитник воды' %}">💧</div>
         </div>
     </div>
 

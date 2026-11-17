@@ -1,167 +1,33 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Эко-Карта — Жашыл KG{% endblock %}
+{% block title %}{% trans "Эко-Карта" %} — Жашыл KG{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 .map-page { position: relative; }
-
-#map {
-    height: calc(100vh - 65px);
-    width: 100%;
-    z-index: 1;
-}
-
-.map-stats {
-    background: var(--card-bg);
-    padding: 0.7rem 2rem;
-    display: flex;
-    gap: 2rem;
-    box-shadow: var(--shadow);
-    z-index: 100;
-}
-
-.map-stat {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-/* ФИЛЬТР ПАНЕЛЬ */
-.filter-panel {
-    position: absolute;
-    top: 120px;
-    left: 20px;
-    z-index: 1000;
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(12px);
-    border-radius: 16px;
-    padding: 1.2rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-    width: 220px;
-}
-
-body.dark-mode .filter-panel {
-    background: rgba(22,27,34,0.95);
-}
-
-.dark-map-tiles {
-    filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
-}
-
-.filter-panel h3 {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--primary);
-}
-
-.filter-item {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.4rem 0;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
+#map { height: calc(100vh - 65px); width: 100%; z-index: 1; }
+.map-stats { background: var(--card-bg); padding: 0.7rem 2rem; display: flex; gap: 2rem; box-shadow: var(--shadow); z-index: 100; }
+.map-stat { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+.filter-panel { position: absolute; top: 120px; left: 20px; z-index: 1000; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-radius: 16px; padding: 1.2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15); width: 220px; }
+body.dark-mode .filter-panel { background: rgba(22,27,34,0.95); }
+.dark-map-tiles { filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7); }
+.filter-panel h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary); }
+.filter-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.4rem 0; cursor: pointer; font-size: 0.9rem; }
 .filter-item input { cursor: pointer; }
-
-.btn-add-point {
-    width: 100%;
-    padding: 0.7rem;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-}
-
+.btn-add-point { width: 100%; padding: 0.7rem; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 1rem; font-size: 0.9rem; }
 .btn-add-point:hover { background: #1f4d38; }
-
-/* МОДАЛ */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-}
-
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; }
 .modal-overlay.show { display: flex; }
-
-.modal {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 2rem;
-    width: 100%;
-    max-width: 480px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-
+.modal { background: var(--card-bg); border-radius: 16px; padding: 2rem; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
 .modal h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem; }
-
-.modal-input {
-    width: 100%;
-    padding: 0.8rem 1rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 10px;
-    margin-bottom: 1rem;
-    font-size: 0.95rem;
-    background: var(--bg);
-    color: var(--text);
-}
-
+.modal-input { width: 100%; padding: 0.8rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; margin-bottom: 1rem; font-size: 0.95rem; background: var(--bg); color: var(--text); }
 .modal-input:focus { outline: none; border-color: var(--primary); }
-
 .modal-btns { display: flex; gap: 1rem; margin-top: 0.5rem; }
-
-.btn-cancel {
-    flex: 1;
-    padding: 0.8rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 10px;
-    background: none;
-    cursor: pointer;
-    font-weight: 600;
-    color: var(--text);
-}
-
-.btn-save {
-    flex: 1;
-    padding: 0.8rem;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.map-hint {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.7);
-    color: white;
-    padding: 0.7rem 1.5rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    z-index: 1000;
-    display: none;
-}
-
-/* ПОИСК ПО АДРЕСУ */
+.btn-cancel { flex: 1; padding: 0.8rem; border: 2px solid #e5e7eb; border-radius: 10px; background: none; cursor: pointer; font-weight: 600; color: var(--text); }
+.btn-save { flex: 1; padding: 0.8rem; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+.map-hint { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; padding: 0.7rem 1.5rem; border-radius: 20px; font-size: 0.9rem; z-index: 1000; display: none; }
 .map-search { position: absolute; top: 80px; right: 20px; z-index: 1000; width: 340px; max-width: calc(100% - 40px); }
 .search-box { display: flex; gap: 0.4rem; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-radius: 14px; padding: 0.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
 body.dark-mode .search-box, body.dark-mode .search-results { background: rgba(22,27,34,0.95); }
@@ -185,153 +51,83 @@ body.dark-mode .search-box, body.dark-mode .search-results { background: rgba(22
 
 {% block content %}
 <div class="map-page">
-
-    <!-- СТАТИСТИКА -->
     <div class="map-stats">
-    <div class="map-stat">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="red" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
-        Свалки: <span id="countTrash">0</span>
+        <div class="map-stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="red" stroke="none"><circle cx="12" cy="12" r="10"/></svg>{% trans "Свалки" %}: <span id="countTrash">0</span></div>
+        <div class="map-stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" stroke="none"><circle cx="12" cy="12" r="10"/></svg>{% trans "Реки" %}: <span id="countWater">0</span></div>
+        <div class="map-stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="#f97316" stroke="none"><circle cx="12" cy="12" r="10"/></svg>{% trans "Лес" %}: <span id="countForest">0</span></div>
+        <div class="map-stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="#22c55e" stroke="none"><circle cx="12" cy="12" r="10"/></svg>{% trans "Решено" %}: <span id="countResolved">0</span></div>
     </div>
-    <div class="map-stat">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
-        Реки: <span id="countWater">0</span>
-    </div>
-    <div class="map-stat">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#f97316" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
-        Лес: <span id="countForest">0</span>
-    </div>
-    <div class="map-stat">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#22c55e" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
-        Решено: <span id="countResolved">0</span>
-    </div>
-</div>
 
-    <!-- КАРТА -->
     <div id="map"></div>
 
-    <!-- ФИЛЬТР ПАНЕЛЬ -->
     <div class="filter-panel">
-    <h3 style="display:flex; align-items:center; gap:0.5rem;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-        </svg>
-        Фильтр
-    </h3>
+        <h3 style="display:flex; align-items:center; gap:0.5rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            {% trans "Фильтр" %}
+        </h3>
+        <label class="filter-item"><input type="checkbox" class="flt" value="trash" checked onchange="filterMarkers()"><svg width="14" height="14" viewBox="0 0 24 24" fill="red" stroke="none"><circle cx="12" cy="12" r="10"/></svg>{% trans "Мусорные свалки" %}</label>
+        <label class="filter-item"><input type="checkbox" class="flt" value="water" checked onchange="filterMarkers()"><svg width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" stroke="none"><circle cx="12" cy="12" r="10"/></svg>{% trans "Загрязнённые реки" %}</label>
+        <label class="filter-item"><input type="checkbox" class="flt" value="forest" checked onchange="filterMarkers()"><svg width="14" height="14" viewBox="0 0 24 24" fill="#f97316" stroke="none"><circle cx="12" cy="12" r="10"/></svg>{% trans "Вырубка леса" %}</label>
+        <label class="filter-item"><input type="checkbox" class="flt" value="air" checked onchange="filterMarkers()"><svg width="14" height="14" viewBox="0 0 24 24" fill="#a855f7" stroke="none"><circle cx="12" cy="12" r="10"/></svg>{% trans "Загрязнение воздуха" %}</label>
+        <label class="filter-item"><input type="checkbox" class="flt" value="resolved" checked onchange="filterMarkers()"><svg width="14" height="14" viewBox="0 0 24 24" fill="#22c55e" stroke="none"><circle cx="12" cy="12" r="10"/></svg>{% trans "Решено" %}</label>
 
-    <label class="filter-item">
-        <input type="checkbox" class="flt" value="trash" checked onchange="filterMarkers()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="red" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
-        Мусорные свалки
-    </label>
-    <label class="filter-item">
-        <input type="checkbox" class="flt" value="water" checked onchange="filterMarkers()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
-        Загрязнённые реки
-    </label>
-    <label class="filter-item">
-        <input type="checkbox" class="flt" value="forest" checked onchange="filterMarkers()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#f97316" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
-        Вырубка леса
-    </label>
-    <label class="filter-item">
-        <input type="checkbox" class="flt" value="air" checked onchange="filterMarkers()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#a855f7" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
-        Загрязнение воздуха
-    </label>
-    <label class="filter-item">
-        <input type="checkbox" class="flt" value="resolved" checked onchange="filterMarkers()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="#22c55e" stroke="none"><circle cx="12" cy="12" r="10"/></svg>
-        Решено
-    </label>
+        {% if user.is_authenticated %}
+        <button class="btn-add-point" onclick="startAddPoint()" style="display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            {% trans "Добавить точку" %}
+        </button>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn-add-point" style="display:block; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            {% trans "Войди чтобы добавить" %}
+        </a>
+        {% endif %}
+    </div>
 
-    {% if user.is_authenticated %}
-    <button class="btn-add-point" onclick="startAddPoint()" style="display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="16"/>
-            <line x1="8" y1="12" x2="16" y2="12"/>
-        </svg>
-        Добавить точку
-    </button>
-    {% else %}
-    <a href="/login/" class="btn-add-point" style="display:block; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-            <polyline points="10 17 15 12 10 7"/>
-            <line x1="15" y1="12" x2="3" y2="12"/>
-        </svg>
-        Войди чтобы добавить
-    </a>
-    {% endif %}
-</div>
-
-    <!-- ПОИСК ПО АДРЕСУ -->
     <div class="map-search">
         <form class="search-box" onsubmit="searchPlaces(event); return false;">
-            <input type="text" id="searchInput" placeholder="Город, село, улица…" autocomplete="off"
-                   oninput="if (!this.value.trim()) document.getElementById('searchResults').hidden = true;">
-            <button type="submit" title="Найти">🔍</button>
-            <button type="button" class="geo" title="Моё местоположение" onclick="useMyLocation()">📍</button>
+            <input type="text" id="searchInput" placeholder="{% trans 'Город, село, улица…' %}" autocomplete="off" oninput="if (!this.value.trim()) document.getElementById('searchResults').hidden = true;">
+            <button type="submit" title="{% trans 'Найти' %}">🔍</button>
+            <button type="button" class="geo" title="{% trans 'Моё местоположение' %}" onclick="useMyLocation()">📍</button>
         </form>
         <div class="search-results" id="searchResults" hidden></div>
     </div>
 
-    <!-- ПОДСКАЗКА -->
-    <div class="map-hint" id="mapHint">📍 Кликни на карту чтобы добавить точку</div>
-
+    <div class="map-hint" id="mapHint" style="display:flex; align-items:center; gap:0.5rem;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        {% trans "Кликни на карту чтобы добавить точку" %}
+    </div>
 </div>
 
-<!-- МОДАЛ ДОБАВЛЕНИЯ ТОЧКИ -->
-<!-- ПОДСКАЗКА -->
-<div class="map-hint" id="mapHint" style="display:flex; align-items:center; gap:0.5rem;">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-        <circle cx="12" cy="10" r="3"/>
-    </svg>
-    Кликни на карту чтобы добавить точку
-</div>
-
-</div>
-
-<!-- МОДАЛ ДОБАВЛЕНИЯ ТОЧКИ -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
         <h3 style="display:flex; align-items:center; gap:0.5rem;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                <circle cx="12" cy="10" r="3"/>
-            </svg>
-            Добавить точку
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {% trans "Добавить точку" %}
         </h3>
-        <input type="text" class="modal-input" id="pointTitle" placeholder="Название проблемы">
-        <textarea class="modal-input" id="pointDesc" placeholder="Описание" rows="3"></textarea>
+        <input type="text" class="modal-input" id="pointTitle" placeholder="{% trans 'Название проблемы' %}">
+        <textarea class="modal-input" id="pointDesc" placeholder="{% trans 'Описание' %}" rows="3"></textarea>
         <select class="modal-input" id="pointType">
-            <option value="trash">Мусорная свалка</option>
-            <option value="water">Загрязнённая река</option>
-            <option value="forest">Вырубка леса</option>
-            <option value="air">Загрязнение воздуха</option>
+            <option value="trash">{% trans "Мусорная свалка" %}</option>
+            <option value="water">{% trans "Загрязнённая река" %}</option>
+            <option value="forest">{% trans "Вырубка леса" %}</option>
+            <option value="air">{% trans "Загрязнение воздуха" %}</option>
         </select>
-        <input type="url" class="modal-input" id="pointVideo" placeholder="Ссылка на видео (необязательно)">
-        <label style="display:block; font-size:0.85rem; color:var(--text-light); margin-bottom:0.3rem;">Фото проблемы (обязательно, до 5 МБ)</label>
+        <input type="url" class="modal-input" id="pointVideo" placeholder="{% trans 'Ссылка на видео (необязательно)' %}">
+        <label style="display:block; font-size:0.85rem; color:var(--text-light); margin-bottom:0.3rem;">{% trans "Фото проблемы (обязательно, до 5 МБ)" %}</label>
         <input type="file" class="modal-input" id="pointPhoto" accept="image/*">
         <div class="modal-btns">
             <button class="btn-cancel" onclick="closeModal()" style="display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-                Отмена
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                {% trans "Отмена" %}
             </button>
             <button class="btn-save" onclick="savePoint()" style="display:flex; align-items:center; justify-content:center; gap:0.5rem;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                    <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                Сохранить
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                {% trans "Сохранить" %}
             </button>
         </div>
     </div>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
@@ -345,102 +141,52 @@ let map, markers = [], addingMode = false, tempLat, tempLng;
 function getCsrfToken() {
     const tokenInput = document.querySelector('[name=csrfmiddlewaretoken]');
     if (tokenInput) return tokenInput.value;
-
-    const cookie = document.cookie
-        .split('; ')
-        .find(item => item.startsWith('csrftoken='));
+    const cookie = document.cookie.split('; ').find(item => item.startsWith('csrftoken='));
     return cookie ? decodeURIComponent(cookie.slice('csrftoken='.length)) : '';
 }
 
-// экранируем пользовательский текст перед вставкой в HTML
-const esc = s => String(s ?? '').replace(/[&<>"']/g,
-    c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-// Инициализация карты
 map = L.map('map').setView([41.2044, 74.7661], 7);
+const lightTile = L.tileLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' });
+const darkTile = L.tileLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors', className: 'dark-map-tiles' });
 
-const lightTile = L.tileLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-});
-
-const darkTile = L.tileLayer('https://tile.openstreetmap.de/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors',
-    className: 'dark-map-tiles'
-});
-
-const isDark = document.body.classList.contains('dark-mode') || localStorage.getItem('theme') === 'dark';
-if (isDark) {
-    darkTile.addTo(map);
-} else {
-    lightTile.addTo(map);
-}
+if (document.body.classList.contains('dark-mode') || localStorage.getItem('theme') === 'dark') { darkTile.addTo(map); } else { lightTile.addTo(map); }
 
 const themeBtn = document.querySelector('.theme-btn');
 if (themeBtn) {
     themeBtn.addEventListener('click', function() {
         setTimeout(() => {
-            const dark = document.body.classList.contains('dark-mode');
-            if (dark) {
-                map.removeLayer(lightTile);
-                darkTile.addTo(map);
-            } else {
-                map.removeLayer(darkTile);
-                lightTile.addTo(map);
-            }
+            if (document.body.classList.contains('dark-mode')) { map.removeLayer(lightTile); darkTile.addTo(map); }
+            else { map.removeLayer(darkTile); lightTile.addTo(map); }
         }, 100);
     });
 }
 
-// Цвета маркеров
-const colors = {
-    'trash': '🔴',
-    'water': '🔵',
-    'forest': '🟠',
-    'air': '🟣',
-};
+const colors = { 'trash': '🔴', 'water': '🔵', 'forest': '🟠', 'air': '🟣' };
 
-// Добавляем точки на карту
 function addMarkers(points) {
     markers.forEach(m => map.removeLayer(m));
     markers = [];
-    
     points.forEach(p => {
-        const icon = L.divIcon({
-            html: `<div style="font-size:24px; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5))">
-                ${p.status === 'resolved' ? '🟢' : (colors[p.type] || '📍')}
-            </div>`,
-            className: '',
-            iconSize: [30, 30],
-        });
+        const icon = L.divIcon({ html: `<div style="font-size:24px; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5))">${p.status === 'resolved' ? '🟢' : (colors[p.type] || '📍')}</div>`, className: '', iconSize: [30, 30] });
+        const media = (p.photo ? `<img src="${esc(p.photo)}" alt="" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px; margin-bottom:0.5rem;">` : '') + (p.video_url ? `<a href="${esc(p.video_url)}" target="_blank" rel="noopener noreferrer">🎥 {% trans "Смотреть видео" %}</a><br>` : '');
+        const solveBtn = p.status === 'active' ? `<br><br><a href="{% url 'challenges' %}?point=${p.id}" style="display:block; text-align:center; background:#2D6A4F; color:white; padding:0.4rem 0.8rem; border-radius:6px; text-decoration:none; font-weight:600;">🎯 {% trans "Решить эту проблему" %}</a>` : '';
+        const delBtn = p.can_delete ? `<br><br><button onclick="deletePoint(${p.id})" style="background:#ef4444; color:white; border:none; padding:0.4rem 0.8rem; border-radius:6px; cursor:pointer; width:100%;">🗑️ {% trans "Удалить точку" %}</button>` : '';
 
-        const media =
-            (p.photo ? `<img src="${esc(p.photo)}" alt="" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px; margin-bottom:0.5rem;">` : '') +
-            (p.video_url ? `<a href="${esc(p.video_url)}" target="_blank" rel="noopener noreferrer">🎥 Смотреть видео</a><br>` : '');
-        const solveBtn = p.status === 'active'
-            ? `<br><br><a href="/challenges/?point=${p.id}" style="display:block; text-align:center; background:#2D6A4F; color:white; padding:0.4rem 0.8rem; border-radius:6px; text-decoration:none; font-weight:600;">🎯 Решить эту проблему</a>`
-            : '';
-        const delBtn = p.can_delete
-            ? `<br><br><button onclick="deletePoint(${p.id})" style="background:#ef4444; color:white; border:none; padding:0.4rem 0.8rem; border-radius:6px; cursor:pointer; width:100%;">🗑️ Удалить точку</button>`
-            : '';
-
-        const marker = L.marker([p.lat, p.lng], {icon})
-            .addTo(map)
-            .bindPopup(`
-                <div style="min-width:200px">
-                    ${media}
-                    <b>${esc(p.title)}</b><br>
-                    <small>${esc(p.description)}</small><br><br>
-                    <span>👤 ${esc(p.reported_by)}</span><br>
-                    <span>${p.status === 'resolved' ? '✅ Решено' : '⚠️ Требует внимания'}</span>
-                    ${solveBtn}${delBtn}
-                </div>
-            `);
-        
+        const marker = L.marker([p.lat, p.lng], {icon}).addTo(map).bindPopup(`
+            <div style="min-width:200px">
+                ${media}
+                <b>${esc(p.title)}</b><br>
+                <small>${esc(p.description)}</small><br><br>
+                <span>👤 ${esc(p.reported_by)}</span><br>
+                <span>${p.status === 'resolved' ? '✅ {% trans "Решено" %}' : '⚠️ {% trans "Требует внимания" %}'}</span>
+                ${solveBtn}${delBtn}
+            </div>
+        `);
         marker.pointId = p.id;
         markers.push(marker);
-
     });
-
 }
 
 function updateCounts() {
@@ -458,94 +204,33 @@ function updateCounts() {
 addMarkers(pointsData);
 updateCounts();
 
-// Добавление точки
-function startAddPoint() {
-    addingMode = true;
-    document.getElementById('mapHint').style.display = 'block';
-}
+function startAddPoint() { addingMode = true; document.getElementById('mapHint').style.display = 'block'; }
 
 map.on('click', function(e) {
     if (!addingMode) return;
-    tempLat = e.latlng.lat;
-    tempLng = e.latlng.lng;
-    addingMode = false;
+    tempLat = e.latlng.lat; tempLng = e.latlng.lng; addingMode = false;
     document.getElementById('mapHint').style.display = 'none';
     document.getElementById('modalOverlay').classList.add('show');
 });
 
-// ───── ПОИСК ПО АДРЕСУ (OpenStreetMap Nominatim, только по кнопке «Найти») ─────
 let searchMarker = null;
-
 function showSearchMarker(lat, lng) {
     if (searchMarker) map.removeLayer(searchMarker);
-    // заметная булавка вместо тонкого кольца
-    searchMarker = L.marker([lat, lng], {
-        icon: L.divIcon({
-            className: '',
-            html: '<div style="font-size:34px; line-height:34px; transform:translate(-50%,-100%); filter:drop-shadow(0 2px 3px rgba(0,0,0,0.4));">📍</div>',
-            iconSize: [0, 0]
-        }),
-        interactive: false
-    }).addTo(map);
+    searchMarker = L.marker([lat, lng], { icon: L.divIcon({ className: '', html: '<div style="font-size:34px; line-height:34px; transform:translate(-50%,-100%); filter:drop-shadow(0 2px 3px rgba(0,0,0,0.4));">📍</div>', iconSize: [0, 0] }), interactive: false }).addTo(map);
 }
+function goTo(lat, lng, zoom) { map.flyTo([lat, lng], zoom || 17); showSearchMarker(lat, lng); }
+function startAddAt(lat, lng) { tempLat = lat; tempLng = lng; addingMode = false; document.getElementById('mapHint').style.display = 'none'; showSearchMarker(lat, lng); document.getElementById('modalOverlay').classList.add('show'); }
+function srNote(text) { const d = document.createElement('div'); d.className = 'sr-note'; d.textContent = text; return d; }
+function srHead(text) { const d = document.createElement('div'); d.className = 'sr-head'; d.textContent = text; return d; }
 
-function goTo(lat, lng, zoom) {
-    map.flyTo([lat, lng], zoom || 17);
-    showSearchMarker(lat, lng);
-}
-
-// открыть форму добавления точки в выбранном месте (без клика по карте)
-function startAddAt(lat, lng) {
-    tempLat = lat;
-    tempLng = lng;
-    addingMode = false;
-    document.getElementById('mapHint').style.display = 'none';
-    showSearchMarker(lat, lng);
-    document.getElementById('modalOverlay').classList.add('show');
-}
-
-function srNote(text) {
-    const d = document.createElement('div');
-    d.className = 'sr-note';
-    d.textContent = text;
-    return d;
-}
-
-function srHead(text) {
-    const d = document.createElement('div');
-    d.className = 'sr-head';
-    d.textContent = text;
-    return d;
-}
-
-// строка результата; весь пользовательский текст вставляется через textContent (без XSS)
 function srRow(title, subtitle, onGo, onAdd) {
-    const row = document.createElement('div');
-    row.className = 'sr-row';
-
-    const text = document.createElement('div');
-    text.className = 'sr-text';
-    text.onclick = onGo;
-    const t = document.createElement('div');
-    t.className = 'sr-title';
-    t.textContent = title;
-    text.appendChild(t);
-    if (subtitle) {
-        const s = document.createElement('div');
-        s.className = 'sr-sub';
-        s.textContent = subtitle;
-        text.appendChild(s);
-    }
+    const row = document.createElement('div'); row.className = 'sr-row';
+    const text = document.createElement('div'); text.className = 'sr-text'; text.onclick = onGo;
+    const t = document.createElement('div'); t.className = 'sr-title'; t.textContent = title; text.appendChild(t);
+    if (subtitle) { const s = document.createElement('div'); s.className = 'sr-sub'; s.textContent = subtitle; text.appendChild(s); }
     row.appendChild(text);
-
     if (onAdd && IS_AUTH) {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'sr-add';
-        b.title = 'Добавить точку здесь';
-        b.textContent = '＋';
-        b.onclick = onAdd;
-        row.appendChild(b);
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'sr-add'; b.title = '{% trans "Добавить точку здесь" %}'; b.textContent = '＋'; b.onclick = onAdd; row.appendChild(b);
     }
     return row;
 }
@@ -555,129 +240,69 @@ async function searchPlaces(e) {
     const q = document.getElementById('searchInput').value.trim();
     const box = document.getElementById('searchResults');
     if (q.length < 2) return;
+    box.hidden = false; box.replaceChildren(srNote('{% trans "Ищу…" %}'));
 
-    box.hidden = false;
-    box.replaceChildren(srNote('Ищу…'));
-
-    // 1) точки, которые уже есть на карте
     const ql = q.toLowerCase();
-    const existing = pointsData
-        .filter(p => (p.title + ' ' + p.description).toLowerCase().includes(ql))
-        .slice(0, 5);
-
-    // 2) адреса: город, село, пгт, улица
+    const existing = pointsData.filter(p => (p.title + ' ' + p.description).toLowerCase().includes(ql)).slice(0, 5);
     let places = [], failed = false;
     try {
-        const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&countrycodes=kg&accept-language=ru&q='
-            + encodeURIComponent(q);
-        const r = await fetch(url);
-        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&countrycodes=kg&accept-language=ru&q=' + encodeURIComponent(q);
+        const r = await fetch(url); if (!r.ok) throw new Error('HTTP ' + r.status);
         places = await r.json();
-    } catch (err) {
-        console.error('Поиск адреса не удался:', err);
-        failed = true;
-    }
+    } catch (err) { failed = true; }
 
     box.replaceChildren();
     if (existing.length) {
-        box.appendChild(srHead('Уже на карте'));
-        existing.forEach(p => box.appendChild(srRow(
-            p.title,
-            p.status === 'resolved' ? '✅ Решено' : '⚠️ Требует внимания',
-            () => {
-                map.flyTo([p.lat, p.lng], 17);
-                const m = markers.find(m => m.pointId === p.id);
-                if (m) map.once('moveend', () => m.openPopup());
-            },
-            null
-        )));
+        box.appendChild(srHead('{% trans "Уже на карте" %}'));
+        existing.forEach(p => box.appendChild(srRow(p.title, p.status === 'resolved' ? '{% trans "Решено" %}' : '{% trans "Требует внимания" %}', () => { map.flyTo([p.lat, p.lng], 17); const m = markers.find(m => m.pointId === p.id); if (m) map.once('moveend', () => m.openPopup()); }, null)));
     }
     if (places.length) {
-        box.appendChild(srHead('Адреса'));
+        box.appendChild(srHead('{% trans "Адреса" %}'));
         places.forEach(pl => {
             const lat = parseFloat(pl.lat), lng = parseFloat(pl.lon);
-            box.appendChild(srRow(
-                pl.name || pl.display_name.split(',')[0],
-                pl.display_name,
-                () => goTo(lat, lng, 16),
-                () => startAddAt(lat, lng)
-            ));
+            box.appendChild(srRow(pl.name || pl.display_name.split(',')[0], pl.display_name, () => goTo(lat, lng, 16), () => startAddAt(lat, lng)));
         });
-        if (!IS_AUTH) box.appendChild(srNote('Чтобы добавить точку, войди в аккаунт.'));
+        if (!IS_AUTH) box.appendChild(srNote('{% trans "Чтобы добавить точку, войди в аккаунт." %}'));
     }
     if (!existing.length && !places.length) {
-        box.appendChild(srNote(failed
-            ? 'Не удалось выполнить поиск. Проверь интернет и попробуй ещё раз.'
-            : 'Ничего не найдено. Попробуй указать город или улицу.'));
+        box.appendChild(srNote(failed ? '{% trans "Не удалось выполнить поиск. Проверь интернет и попробуй ещё раз." %}' : '{% trans "Ничего не найдено. Попробуй указать город или улицу." %}'));
     }
 }
 
-// «Я здесь»: быстро поставить точку там, где ты стоишь
 function useMyLocation() {
     const box = document.getElementById('searchResults');
     box.hidden = false;
-    if (!navigator.geolocation) {
-        box.replaceChildren(srNote('Браузер не умеет определять местоположение.'));
-        return;
-    }
-    box.replaceChildren(srNote('Определяю местоположение…'));
+    if (!navigator.geolocation) { box.replaceChildren(srNote('{% trans "Браузер не умеет определять местоположение." %}')); return; }
+    box.replaceChildren(srNote('{% trans "Определяю местоположение…" %}'));
     navigator.geolocation.getCurrentPosition(pos => {
         const lat = pos.coords.latitude, lng = pos.coords.longitude;
         goTo(lat, lng, 17);
-        box.replaceChildren(
-            srHead('Ты здесь'),
-            srRow('📍 Моё местоположение', lat.toFixed(5) + ', ' + lng.toFixed(5),
-                  () => goTo(lat, lng, 17), () => startAddAt(lat, lng))
-        );
-        if (!IS_AUTH) box.appendChild(srNote('Чтобы добавить точку, войди в аккаунт.'));
-    }, () => {
-        box.replaceChildren(srNote('Не удалось определить местоположение. Разреши доступ в браузере или введи адрес.'));
-    }, {enableHighAccuracy: true, timeout: 10000});
+        box.replaceChildren(srHead('{% trans "Ты здесь" %}'), srRow('📍 {% trans "Моё местоположение" %}', lat.toFixed(5) + ', ' + lng.toFixed(5), () => goTo(lat, lng, 17), () => startAddAt(lat, lng)));
+        if (!IS_AUTH) box.appendChild(srNote('{% trans "Чтобы добавить точку, войди в аккаунт." %}'));
+    }, () => { box.replaceChildren(srNote('{% trans "Не удалось определить местоположение." %}')); }, {enableHighAccuracy: true, timeout: 10000});
 }
 
-function closeModal() {
-    document.getElementById('modalOverlay').classList.remove('show');
-    document.getElementById('pointTitle').value = '';
-    document.getElementById('pointDesc').value = '';
-    document.getElementById('pointVideo').value = '';
-    document.getElementById('pointPhoto').value = '';
-}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); document.getElementById('pointTitle').value = ''; document.getElementById('pointDesc').value = ''; document.getElementById('pointVideo').value = ''; document.getElementById('pointPhoto').value = ''; }
 
 function savePoint() {
     const title = document.getElementById('pointTitle').value.trim();
-    if (!title) { alert('Введи название!'); return; }
-
+    if (!title) { alert('{% trans "Введи название!" %}'); return; }
     const fd = new FormData();
-    fd.append('title', title);
-    fd.append('description', document.getElementById('pointDesc').value);
-    fd.append('type', document.getElementById('pointType').value);
-    fd.append('video_url', document.getElementById('pointVideo').value.trim());
-    fd.append('latitude', tempLat);
-    fd.append('longitude', tempLng);
-
+    fd.append('title', title); fd.append('description', document.getElementById('pointDesc').value);
+    fd.append('type', document.getElementById('pointType').value); fd.append('video_url', document.getElementById('pointVideo').value.trim());
+    fd.append('latitude', tempLat); fd.append('longitude', tempLng);
     const photo = document.getElementById('pointPhoto').files[0];
-    if (!photo) { alert('Прикрепи фото проблемы: так понятно, что нужно сделать на месте.'); return; }
-    if (photo.size > 5 * 1024 * 1024) { alert('Фото больше 5 МБ'); return; }
+    if (!photo) { alert('{% trans "Прикрепи фото проблемы" %}'); return; }
+    if (photo.size > 5 * 1024 * 1024) { alert('{% trans "Фото больше 5 МБ" %}'); return; }
     fd.append('photo', photo);
 
-    // Content-Type НЕ ставим вручную: браузер сам добавит boundary для FormData
-    fetch('/ecomap/add/', {
-        method: 'POST',
-        headers: { 'X-CSRFToken': getCsrfToken() },
-        body: fd
-    })
+    fetch('/ecomap/add/', { method: 'POST', headers: { 'X-CSRFToken': getCsrfToken() }, body: fd })
     .then(async response => {
         const data = await response.json().catch(() => ({}));
-        if (!response.ok || data.status !== 'ok') {
-            throw new Error(data.message || `Ошибка сервера (${response.status})`);
-        }
-        closeModal();
-        location.reload();
+        if (!response.ok || data.status !== 'ok') throw new Error(data.message || 'Error');
+        closeModal(); location.reload();
     })
-    .catch(error => {
-        console.error('Не удалось добавить точку на карту:', error);
-        alert(`Не удалось добавить точку: ${error.message}`);
-    });
+    .catch(error => { alert(`{% trans "Не удалось добавить точку:" %} ${error.message}`); });
 }
 
 function filterMarkers() {
@@ -686,28 +311,9 @@ function filterMarkers() {
 }
 
 function deletePoint(id) {
-    if (!confirm('Удалить эту точку?')) return;
-    fetch(`/ecomap/delete/${id}/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCsrfToken()
-        }
-    })
-    .then(async response => {
-        if (!response.ok) {
-            throw new Error(`Ошибка сервера (${response.status})`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.status === 'ok') location.reload();
-        else throw new Error(data.message || 'Не удалось удалить точку');
-    })
-    .catch(error => {
-        console.error('Не удалось удалить точку с карты:', error);
-        alert(`Не удалось удалить точку: ${error.message}`);
-    });
+    if (!confirm('{% trans "Удалить эту точку?" %}')) return;
+    fetch(`/ecomap/delete/${id}/`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() } })
+    .then(res => res.json()).then(data => { if (data.status === 'ok') location.reload(); else alert(data.message); });
 }
 </script>
 {% endblock %}

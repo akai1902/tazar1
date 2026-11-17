@@ -1,281 +1,140 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Рейтинг — TAZAR{% endblock %}
+{% block title %}{% trans "Рейтинг" %} — TAZAR{% endblock %}
 
 {% block extra_css %}
 <style>
-/* Фикс футера для страницы рейтинга */
-html, body {
-    height: 100%;
-    margin: 0;
-}
-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-main {
-    flex: 1;
-}
-
-.leaderboard-hero {
-    background: linear-gradient(135deg, #1a3a2a 0%, #2D6A4F 100%);
-    color: white;
-    padding: 3rem 2rem;
-    text-align: center;
-}
-
+html, body { height: 100%; margin: 0; }
+body { display: flex; flex-direction: column; min-height: 100vh; }
+main { flex: 1; }
+.leaderboard-hero { background: linear-gradient(135deg, #1a3a2a 0%, #2D6A4F 100%); color: white; padding: 3rem 2rem; text-align: center; }
 .leaderboard-hero h1 { font-size: 2.5rem; font-weight: 800; }
 .leaderboard-hero p { opacity: 0.9; margin-top: 0.5rem; }
-
-.leaderboard-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 0 2rem;
-}
-
-/* ТОП 3 */
-.top3 {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.top3-item {
-    text-align: center;
-    background: var(--card-bg);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
-    padding: 1.5rem 1rem;
-    flex: 1;
-    max-width: 200px;
-}
-
-.top3-item.first {
-    transform: translateY(-20px);
-    border: 3px solid #f59e0b;
-}
-
+.leaderboard-container { max-width: 800px; margin: 2rem auto; padding: 0 2rem; }
+.top3 { display: flex; justify-content: center; align-items: flex-end; gap: 1rem; margin-bottom: 2rem; }
+.top3-item { text-align: center; background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow); padding: 1.5rem 1rem; flex: 1; max-width: 200px; }
+.top3-item.first { transform: translateY(-20px); border: 3px solid #f59e0b; }
 .top3-item.second { border: 3px solid #9ca3af; }
 .top3-item.third { border: 3px solid #cd7c2f; }
-
 .top3-crown { font-size: 2.5rem; }
-.top3-avatar {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    margin: 0.5rem auto;
-}
-
+.top3-avatar { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0.5rem auto; }
 .top3-name { font-weight: 700; font-size: 1rem; margin-top: 0.5rem; }
 .top3-points { color: var(--primary); font-weight: 800; font-size: 1.2rem; }
 .top3-city { color: var(--text-light); font-size: 0.8rem; }
-
-/* ТАБЛИЦА */
-.leaderboard-table {
-    background: var(--card-bg);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
-}
-
-.leaderboard-row {
-    display: flex;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--bg);
-    transition: background 0.2s;
-}
-
+.leaderboard-table { background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+.leaderboard-row { display: flex; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--bg); transition: background 0.2s; }
 .leaderboard-row:hover { background: var(--bg); }
-
-.leaderboard-row.current-user {
-    background: #d1fae5;
-    border-left: 4px solid var(--primary);
-}
-
+.leaderboard-row.current-user { background: #d1fae5; border-left: 4px solid var(--primary); }
 body.dark-mode .leaderboard-row.current-user { background: #1a3a2a; }
-
-.lb-rank {
-    width: 40px;
-    font-weight: 800;
-    font-size: 1.1rem;
-    color: var(--text-light);
-}
-
-.lb-avatar {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    margin-right: 1rem;
-}
-
+.lb-rank { width: 40px; font-weight: 800; font-size: 1.1rem; color: var(--text-light); }
+.lb-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-right: 1rem; }
 .lb-info { flex: 1; }
 .lb-username { font-weight: 700; }
 .lb-city { color: var(--text-light); font-size: 0.85rem; }
-
-.lb-points-big {
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: var(--primary);
-}
-
+.lb-points-big { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
 .lb-badges { display: flex; gap: 0.3rem; margin-right: 1rem; }
 </style>
 {% endblock %}
 
 {% block content %}
-
-<!-- ТАБЫ -->
 <div style="max-width:800px; margin: 1.5rem auto; padding: 0 2rem; display:flex; gap:1rem;">
-    <button onclick="showTab('users')" id="tab-users" class="btn-primary" style="flex:1;">
-        👤 Участники
-    </button>
-    <button onclick="showTab('teams')" id="tab-teams" class="btn-outline" style="flex:1;">
-        👥 Команды
-    </button>
+    <button onclick="showTab('users')" id="tab-users" class="btn-primary" style="flex:1;">👤 {% trans "Участники" %}</button>
+    <button onclick="showTab('teams')" id="tab-teams" class="btn-outline" style="flex:1;">👥 {% trans "Команды" %}</button>
 </div>
 
-<!-- УЧАСТНИКИ -->
 <div id="section-users">
-
-<div class="leaderboard-hero">
-    <h1>🏆 Рейтинг участников</h1>
-    <p>Самые активные защитники природы Кыргызстана</p>
-</div>
-
-<div class="leaderboard-container">
-
-    {% if users %}
-
-    <!-- ТОП 3 -->
-    {% if users|length >= 3 %}
-    <div class="top3">
-        <!-- 2 место -->
-        <div class="top3-item second">
-            <div class="top3-crown">🥈</div>
-            <div class="top3-avatar">👤</div>
-            <div class="top3-name">{{ users.1.username }}</div>
-            <div class="top3-points">{{ users.1.points }} pts</div>
-            <div class="top3-city">
-                {% if users.1.city %}{{ users.1.city }}{% else %}Кыргызстан{% endif %}
-            </div>
-        </div>
-
-        <!-- 1 место -->
-        <div class="top3-item first">
-            <div class="top3-crown">🥇</div>
-            <div class="top3-avatar">👤</div>
-            <div class="top3-name">{{ users.0.username }}</div>
-            <div class="top3-points">{{ users.0.points }} pts</div>
-            <div class="top3-city">
-                {% if users.0.city %}{{ users.0.city }}{% else %}Кыргызстан{% endif %}
-            </div>
-        </div>
-
-        <!-- 3 место -->
-        <div class="top3-item third">
-            <div class="top3-crown">🥉</div>
-            <div class="top3-avatar">👤</div>
-            <div class="top3-name">{{ users.2.username }}</div>
-            <div class="top3-points">{{ users.2.points }} pts</div>
-            <div class="top3-city">
-                {% if users.2.city %}{{ users.2.city }}{% else %}Кыргызстан{% endif %}
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- ПОЛНАЯ ТАБЛИЦА -->
-    <div class="leaderboard-table">
-        {% for u in users %}
-        <div class="leaderboard-row {% if u == user %}current-user{% endif %}">
-            <div class="lb-rank">
-                {% if forloop.counter == 1 %}🥇
-                {% elif forloop.counter == 2 %}🥈
-                {% elif forloop.counter == 3 %}🥉
-                {% else %}{{ forloop.counter }}{% endif %}
-            </div>
-            <div class="lb-avatar">👤</div>
-            <div class="lb-info">
-                <div class="lb-username">
-                    {{ u.username }}
-                    {% if u == user %}<span style="color:var(--primary); font-size:0.8rem;">(вы)</span>{% endif %}
-                </div>
-                <div class="lb-city">
-                    📍 {% if u.city %}{{ u.city }}{% else %}Кыргызстан{% endif %}
-                </div>
-            </div>
-            <div class="lb-badges">🌱♻️</div>
-            <div class="lb-points-big">{{ u.points }} pts</div>
-        </div>
-        {% endfor %}
-    </div>
-
-    {% else %}
-    <div style="text-align:center; padding:3rem; color:var(--text-light);">
-        <div style="font-size:3rem;">🏆</div>
-        <h3>Пока никого нет в рейтинге</h3>
-        <p>Выполняй челленджи и зарабатывай баллы!</p>
-    </div>
-    {% endif %}
-
-</div>
-
-</div>
-
-<!-- КОМАНДЫ -->
-<div id="section-teams" style="display:none;">
-
     <div class="leaderboard-hero">
-        <h1>🏆 Рейтинг команд</h1>
-        <p>Самые сплоченные эко-команды Кыргызстана</p>
+        <h1>🏆 {% trans "Рейтинг участников" %}</h1>
+        <p>{% trans "Самые активные защитники природы Кыргызстана" %}</p>
+    </div>
+    <div class="leaderboard-container">
+        {% if users %}
+        {% if users|length >= 3 %}
+        <div class="top3">
+            <div class="top3-item second">
+                <div class="top3-crown">🥈</div>
+                <div class="top3-avatar">👤</div>
+                <div class="top3-name">{{ users.1.username }}</div>
+                <div class="top3-points">{{ users.1.points }} pts</div>
+                <div class="top3-city">{% if users.1.city %}{{ users.1.city }}{% else %}{% trans "Кыргызстан" %}{% endif %}</div>
+            </div>
+            <div class="top3-item first">
+                <div class="top3-crown">🥇</div>
+                <div class="top3-avatar">👤</div>
+                <div class="top3-name">{{ users.0.username }}</div>
+                <div class="top3-points">{{ users.0.points }} pts</div>
+                <div class="top3-city">{% if users.0.city %}{{ users.0.city }}{% else %}{% trans "Кыргызстан" %}{% endif %}</div>
+            </div>
+            <div class="top3-item third">
+                <div class="top3-crown">🥉</div>
+                <div class="top3-avatar">👤</div>
+                <div class="top3-name">{{ users.2.username }}</div>
+                <div class="top3-points">{{ users.2.points }} pts</div>
+                <div class="top3-city">{% if users.2.city %}{{ users.2.city }}{% else %}{% trans "Кыргызстан" %}{% endif %}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="leaderboard-table">
+            {% for u in users %}
+            <div class="leaderboard-row {% if u == user %}current-user{% endif %}">
+                <div class="lb-rank">
+                    {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}{{ forloop.counter }}{% endif %}
+                </div>
+                <div class="lb-avatar">👤</div>
+                <div class="lb-info">
+                    <div class="lb-username">{{ u.username }} {% if u == user %}<span style="color:var(--primary); font-size:0.8rem;">({% trans "вы" %})</span>{% endif %}</div>
+                    <div class="lb-city">📍 {% if u.city %}{{ u.city }}{% else %}{% trans "Кыргызстан" %}{% endif %}</div>
+                </div>
+                <div class="lb-badges">🌱♻️</div>
+                <div class="lb-points-big">{{ u.points }} pts</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center; padding:3rem; color:var(--text-light);">
+            <div style="font-size:3rem;">🏆</div>
+            <h3>{% trans "Пока никого нет в рейтинге" %}</h3>
+            <p>{% trans "Выполняй челленджи и зарабатывай баллы!" %}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div id="section-teams" style="display:none;">
+    <div class="leaderboard-hero">
+        <h1>🏆 {% trans "Рейтинг команд" %}</h1>
+        <p>{% trans "Самые сплоченные эко-команды Кыргызстана" %}</p>
         <div style="margin-top: 1rem; font-size: 0.95rem; opacity: 0.95;">
-            Не состоишь в команде?
-            <a href="/teams/" style="color: #fff; text-decoration: underline; margin-left: 0.3rem;">Присоединяйся</a> |
-            <a href="/teams/create/" style="color: #fff; text-decoration: underline; margin-left: 0.3rem;">Создавай</a>
+            {% trans "Не состоишь в команде?" %}
+            <a href="{% url 'teams' %}" style="color: #fff; text-decoration: underline; margin-left: 0.3rem;">{% trans "Присоединяйся" %}</a> |
+            <a href="{% url 'create_team' %}" style="color: #fff; text-decoration: underline; margin-left: 0.3rem;">{% trans "Создавай" %}</a>
         </div>
     </div>
-
     <div class="leaderboard-container">
         <div class="leaderboard-table">
             {% for team in teams %}
             <div class="leaderboard-row">
                 <div class="lb-rank">
-                    {% if forloop.counter == 1 %}🥇
-                    {% elif forloop.counter == 2 %}🥈
-                    {% elif forloop.counter == 3 %}🥉
-                    {% else %}{{ forloop.counter }}{% endif %}
+                    {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}{{ forloop.counter }}{% endif %}
                 </div>
                 <div class="lb-avatar">👥</div>
                 <div class="lb-info">
                     <div class="lb-username"><a href="{% url 'team_detail' team.pk %}" style="color:inherit; text-decoration:none;">{{ team.name }}</a></div>
-                    <div class="lb-city">👤 {{ team.members.count }} участников</div>
+                    <div class="lb-city">👤 {{ team.members.count }} {% trans "участников" %}</div>
                 </div>
                 <div class="lb-points-big">{{ team.total_points }} pts</div>
             </div>
             {% empty %}
             <div style="text-align:center; padding:3rem; color:var(--text-light);">
                 <div style="font-size:3rem;">👥</div>
-                <h3>Команд пока нет</h3>
-                <a href="/teams/create/" class="btn-primary" style="display:inline-block; margin-top:1rem;">Создать команду</a>
+                <h3>{% trans "Команд пока нет" %}</h3>
+                <a href="{% url 'create_team' %}" class="btn-primary" style="display:inline-block; margin-top:1rem;">{% trans "Создать команду" %}</a>
             </div>
             {% endfor %}
         </div>
     </div>
-
 </div>
 
 <script>
@@ -286,5 +145,4 @@ function showTab(tab) {
     document.getElementById('tab-teams').className = tab === 'teams' ? 'btn-primary' : 'btn-outline';
 }
 </script>
-
 {% endblock %}

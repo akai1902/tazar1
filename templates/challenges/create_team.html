@@ -1,83 +1,20 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}Создать команду — Жашыл KG{% endblock %}
+{% block title %}{% trans "Создать команду" %} — Жашыл KG{% endblock %}
 
 {% block extra_css %}
 <style>
-.create-container {
-    min-height: 80vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-}
-
-.create-card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
-    padding: 2.5rem;
-    width: 100%;
-    max-width: 500px;
-}
-
-.create-logo {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #2D6A4F, #74C69D);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    box-shadow: 0 8px 25px rgba(45,106,79,0.3);
-}
-
+.create-container { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.create-card { background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow); padding: 2.5rem; width: 100%; max-width: 500px; }
+.create-logo { width: 80px; height: 80px; background: linear-gradient(135deg, #2D6A4F, #74C69D); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; box-shadow: 0 8px 25px rgba(45,106,79,0.3); }
 .create-title { text-align: center; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem; }
 .create-subtitle { text-align: center; color: var(--text-light); margin-bottom: 2rem; font-size: 0.9rem; }
-
 .form-group { margin-bottom: 1.2rem; }
-.form-group label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-weight: 600;
-    margin-bottom: 0.4rem;
-    font-size: 0.9rem;
-}
-
-.form-input {
-    width: 100%;
-    padding: 0.8rem 1rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 10px;
-    font-size: 1rem;
-    background: var(--bg);
-    color: var(--text);
-    transition: border-color 0.2s;
-}
-
+.form-group label { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; margin-bottom: 0.4rem; font-size: 0.9rem; }
+.form-input { width: 100%; padding: 0.8rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; background: var(--bg); color: var(--text); }
 .form-input:focus { outline: none; border-color: var(--primary); }
-
-.btn-submit {
-    width: 100%;
-    padding: 0.9rem;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s;
-    margin-top: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
+.btn-submit { width: 100%; padding: 0.9rem; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
 .btn-submit:hover { background: #1f4d38; }
 </style>
 {% endblock %}
@@ -85,61 +22,26 @@
 {% block content %}
 <div class="create-container">
     <div class="create-card">
-        <div class="create-logo">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-        </div>
-        <h1 class="create-title">Создать команду</h1>
-        <p class="create-subtitle">Объедини друзей и меняйте Кыргызстан вместе!</p>
+        <div class="create-logo">👥</div>
+        <h1 class="create-title">{% trans "Создать команду" %}</h1>
+        <p class="create-subtitle">{% trans "Объедини друзей и меняйте Кыргызстан вместе!" %}</p>
 
         <form method="POST">
             {% csrf_token %}
             <div class="form-group">
-                <label>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                    </svg>
-                    Название команды
-                </label>
-                <input type="text" name="name" class="form-input" placeholder="Например: Эко-Бишкек" required>
+                <label>{% trans "Название команды" %}</label>
+                <input type="text" name="name" class="form-input" placeholder="{% trans 'Например: Эко-Бишкек' %}" required>
             </div>
             <div class="form-group">
-                <label>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="17" y1="10" x2="3" y2="10"/>
-                        <line x1="21" y1="6" x2="3" y2="6"/>
-                        <line x1="21" y1="14" x2="3" y2="14"/>
-                        <line x1="17" y1="18" x2="3" y2="18"/>
-                    </svg>
-                    Описание
-                </label>
-                <textarea name="description" class="form-input" rows="3" placeholder="Расскажи о своей команде..."></textarea>
+                <label>{% trans "Описание" %}</label>
+                <textarea name="description" class="form-input" rows="3" placeholder="{% trans 'Расскажи о своей команде...' %}"></textarea>
             </div>
-            <button type="submit" class="btn-submit">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <line x1="19" y1="8" x2="19" y2="14"/>
-                    <line x1="22" y1="11" x2="16" y2="11"/>
-                </svg>
-                Создать команду
-            </button>
+            <button type="submit" class="btn-submit">{% trans "Создать команду" %}</button>
         </form>
 
         <div style="text-align:center; margin-top:1.5rem;">
-            <a href="/teams/" style="color:var(--primary); text-decoration:none; font-weight:600; display:flex; align-items:center; justify-content:center; gap:0.3rem;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="15 18 9 12 15 6"/>
-                </svg>
-                Назад к командам
-            </a>
+            <a href="{% url 'teams' %}" style="color:var(--primary); text-decoration:none; font-weight:600;">← {% trans "Назад к командам" %}</a>
         </div>
     </div>
 </div>
-
 {% endblock %}

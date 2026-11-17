@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Регистрация — TAZAR{% endblock %}
+{% block title %}{% trans "Регистрация" %} — TAZAR{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -108,8 +109,8 @@
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-logo"></div>
-        <h1 class="auth-title">Регистрация</h1>
-        <p class="auth-subtitle">Присоединяйся к Жашыл Кыргызстан</p>
+        <h1 class="auth-title">{% trans "Регистрация" %}</h1>
+        <p class="auth-subtitle">{% trans "Присоединяйся к Жашыл Кыргызстан" %}</p>
 
         {% if messages %}
         <div class="messages">
@@ -130,11 +131,11 @@
                 {% endif %}
             </div>
             {% endfor %}
-            <button type="submit" class="btn-submit">Зарегистрироваться</button>
+            <button type="submit" class="btn-submit">{% trans "Зарегистрироваться" %}</button>
         </form>
 
         <div class="auth-link">
-            Уже есть аккаунт? <a href="/login/">Войти</a>
+            {% trans "Уже есть аккаунт?" %} <a href="{% url 'login' %}">{% trans "Войти" %}</a>
         </div>
     </div>
 </div>

@@ -12,6 +12,9 @@ msgstr "Challenges"
 msgid "Эко-Карта"
 msgstr "Eco Map"
 
+msgid "Команды"
+msgstr "Teams"
+
 msgid "Рейтинг"
 msgstr "Leaderboard"
 
@@ -36,17 +39,29 @@ msgstr "Making Kyrgyzstan cleaner together"
 msgid "Жашыл Кыргызстан"
 msgstr "Green Kyrgyzstan"
 
+msgid "Жашыл Кыргызстан — Главная"
+msgstr "Green Kyrgyzstan — Home"
+
+msgid "ЭКОЛОГИЧЕСКАЯ ПЛАТФОРМА КЫРГЫЗСТАНА"
+msgstr "ECOLOGICAL PLATFORM OF KYRGYZSTAN"
+
 msgid "Отмечай проблемы на карте. Выполняй челленджи. Меняй страну."
 msgstr "Mark problems on the map. Complete challenges. Change the country."
+
+msgid "К челленджам"
+msgstr "To challenges"
+
+msgid "Узнать больше"
+msgstr "Learn more"
 
 msgid "Участников"
 msgstr "Participants"
 
-msgid "Челленджей"
-msgstr "Challenges"
+msgid "Челленджей выполнено"
+msgstr "Challenges completed"
 
-msgid "Деревьев посажено"
-msgstr "Trees planted"
+msgid "Точек на карте"
+msgstr "Map points"
 
 msgid "Проблем решено"
 msgstr "Problems solved"
@@ -54,32 +69,389 @@ msgstr "Problems solved"
 msgid "Популярные челленджи"
 msgstr "Popular challenges"
 
+msgid "Участвовать"
+msgstr "Participate"
+
+msgid "Челленджи скоро появятся"
+msgstr "Challenges coming soon"
+
 msgid "Как это работает?"
 msgstr "How does it work?"
-
-msgid "Участвовать"
-msgstr "Join"
-
-msgid "Экология"
-msgstr "Ecology"
-
-msgid "Вода"
-msgstr "Water"
-
-msgid "Убери мусор в парке"
-msgstr "Clean up the park"
-
-msgid "Посади дерево"
-msgstr "Plant a tree"
-
-msgid "Очисти берег реки"
-msgstr "Clean the riverbank"
 
 msgid "Отметь проблему"
 msgstr "Mark a problem"
 
+msgid "Найди экологическую проблему рядом и отметь её на карте"
+msgstr "Find a nearby ecological problem and mark it on the map"
+
 msgid "Выполни челлендж"
 msgstr "Complete a challenge"
 
+msgid "Возьми задание, реши проблему и загрузи фото-доказательство"
+msgstr "Take a task, solve the problem, and upload photo proof"
+
 msgid "Получи баллы"
 msgstr "Earn points"
+
+msgid "Зарабатывай баллы, значки и попади в топ рейтинга"
+msgstr "Earn points, badges, and get to the top of the leaderboard"
+
+msgid "Свалки"
+msgstr "Dumps"
+
+msgid "Реки"
+msgstr "Rivers"
+
+msgid "Лес"
+msgstr "Forest"
+
+msgid "Решено"
+msgstr "Resolved"
+
+msgid "Фильтр"
+msgstr "Filter"
+
+msgid "Мусорные свалки"
+msgstr "Garbage dumps"
+
+msgid "Загрязнённые реки"
+msgstr "Polluted rivers"
+
+msgid "Вырубка леса"
+msgstr "Deforestation"
+
+msgid "Загрязнение воздуха"
+msgstr "Air pollution"
+
+msgid "Добавить точку"
+msgstr "Add point"
+
+msgid "Войди чтобы добавить"
+msgstr "Login to add"
+
+msgid "Город, село, улица…"
+msgstr "City, village, street..."
+
+msgid "Найти"
+msgstr "Search"
+
+msgid "Моё местоположение"
+msgstr "My location"
+
+msgid "Кликни на карту чтобы добавить точку"
+msgstr "Click on the map to add a point"
+
+msgid "Название проблемы"
+msgstr "Problem title"
+
+msgid "Описание"
+msgstr "Description"
+
+msgid "Загрязнённая река"
+msgstr "Polluted river"
+
+msgid "Ссылка на видео (необязательно)"
+msgstr "Video link (optional)"
+
+msgid "Фото проблемы (обязательно, до 5 МБ)"
+msgstr "Problem photo (required, up to 5 MB)"
+
+msgid "Отмена"
+msgstr "Cancel"
+
+msgid "Сохранить"
+msgstr "Save"
+
+msgid "Рейтинг участников"
+msgstr "Participants Leaderboard"
+
+msgid "Самые активные защитники природы Кыргызстана"
+msgstr "The most active nature defenders of Kyrgyzstan"
+
+msgid "Кыргызстан"
+msgstr "Kyrgyzstan"
+
+msgid "вы"
+msgstr "you"
+
+msgid "Пока никого нет в рейтинге"
+msgstr "No one in the leaderboard yet"
+
+msgid "Выполняй челленджи и зарабатывай баллы!"
+msgstr "Complete challenges and earn points!"
+
+msgid "Рейтинг команд"
+msgstr "Teams Leaderboard"
+
+msgid "Самые сплоченные эко-команды Кыргызстана"
+msgstr "The most united eco-teams of Kyrgyzstan"
+
+msgid "Не состоишь в команде?"
+msgstr "Not in a team?"
+
+msgid "Присоединяйся"
+msgstr "Join"
+
+msgid "Создавай"
+msgstr "Create"
+
+msgid "участников"
+msgstr "participants"
+
+msgid "Команд пока нет"
+msgstr "No teams yet"
+
+msgid "Создать команду"
+msgstr "Create team"
+
+msgid "Объединяйтесь и меняйте Кыргызстан вместе!"
+msgstr "Unite and change Kyrgyzstan together!"
+
+msgid "Все команды"
+msgstr "All teams"
+
+msgid "Найти команду по названию..."
+msgstr "Find team by name..."
+
+msgid "Сбросить"
+msgstr "Reset"
+
+msgid "Вступить"
+msgstr "Join"
+
+msgid "Вы в команде"
+msgstr "You are in the team"
+
+msgid "Ничего не найдено"
+msgstr "Nothing found"
+
+msgid "Нет команд по запросу"
+msgstr "No teams matching"
+
+msgid "Создай первую команду!"
+msgstr "Create the first team!"
+
+msgid "Баллов"
+msgstr "Points"
+
+msgid "Вы создатель"
+msgstr "You are the creator"
+
+msgid "Удалить команду"
+msgstr "Delete team"
+
+msgid "Покинуть команду"
+msgstr "Leave team"
+
+msgid "Вступить в команду"
+msgstr "Join team"
+
+msgid "Удалить участника"
+msgstr "Remove member"
+
+msgid "Добавить участника"
+msgstr "Add member"
+
+msgid "Введи username..."
+msgstr "Enter username..."
+
+msgid "Добавить"
+msgstr "Add"
+
+msgid "О команде"
+msgstr "About team"
+
+msgid "Создатель"
+msgstr "Creator"
+
+msgid "Общие баллы"
+msgstr "Total points"
+
+msgid "Создана"
+msgstr "Created"
+
+msgid "Назад к командам"
+msgstr "Back to teams"
+
+msgid "Объедини друзей и меняйте Кыргызстан вместе!"
+msgstr "Unite friends and change Kyrgyzstan together!"
+
+msgid "Название команды"
+msgstr "Team name"
+
+msgid "Например: Эко-Бишкек"
+msgstr "Example: Eco-Bishkek"
+
+msgid "Расскажи о своей команде..."
+msgstr "Tell about your team..."
+
+msgid "Эко-Челленджи"
+msgstr "Eco Challenges"
+
+msgid "Выполняй задания, зарабатывай баллы и меняй Кыргызстан"
+msgstr "Complete tasks, earn points, and change Kyrgyzstan"
+
+msgid "Решаем проблему:"
+msgstr "Solving problem:"
+
+msgid "Выбери подходящий челлендж ниже."
+msgstr "Choose a suitable challenge below."
+
+msgid "Фильтр:"
+msgstr "Filter:"
+
+msgid "Все"
+msgstr "All"
+
+msgid "Культура"
+msgstr "Culture"
+
+msgid "Волонтёрство"
+msgstr "Volunteering"
+
+msgid "Лёгкий"
+msgstr "Easy"
+
+msgid "Средний"
+msgstr "Medium"
+
+msgid "Сложный"
+msgstr "Hard"
+
+msgid "Выбрать"
+msgstr "Select"
+
+msgid "Подробнее"
+msgstr "Details"
+
+msgid "Челленджей пока нет"
+msgstr "No challenges yet"
+
+msgid "Администратор скоро добавит задания!"
+msgstr "The administrator will add tasks soon!"
+
+msgid "Открытые проблемы на карте"
+msgstr "Open problems on the map"
+
+msgid "Выбери проблему, которую хочешь решить: подберём подходящий челлендж."
+msgstr "Choose a problem you want to solve: we will pick a suitable challenge."
+
+msgid "Решить"
+msgstr "Solve"
+
+msgid "Открытых проблем пока нет."
+msgstr "No open problems yet."
+
+msgid "Отметь первую на карте"
+msgstr "Mark the first one on the map"
+
+msgid "Топ участников"
+msgstr "Top participants"
+
+msgid "Пока никого нет. Стань первым!"
+msgstr "No one here yet. Be the first!"
+
+msgid "Весь рейтинг"
+msgstr "Full leaderboard"
+
+msgid "Статистика"
+msgstr "Statistics"
+
+msgid "Всего челленджей"
+msgstr "Total challenges"
+
+msgid "баллов за выполнение"
+msgstr "points for completion"
+
+msgid "Точка на карте:"
+msgstr "Point on map:"
+
+msgid "Выполнено раз:"
+msgstr "Completed times:"
+
+msgid "На проверке у модератора:"
+msgstr "Pending moderator review:"
+
+msgid "Принять снова"
+msgstr "Accept again"
+
+msgid "Принять челлендж"
+msgstr "Accept challenge"
+
+msgid "Челлендж закрыт"
+msgstr "Challenge is closed"
+
+msgid "Выполнено! Вы получили баллы"
+msgstr "Completed! You received points"
+
+msgid "Отправлено на проверку. Ждём модератора"
+msgstr "Submitted for review. Waiting for moderator"
+
+msgid "Вы участвуете в этом челлендже!"
+msgstr "You are participating in this challenge!"
+
+msgid "Отправить доказательство"
+msgstr "Submit proof"
+
+msgid "Отправить на проверку"
+msgstr "Submit for review"
+
+msgid "Войди чтобы участвовать"
+msgstr "Login to participate"
+
+msgid "Требования"
+msgstr "Requirements"
+
+msgid "Назад к челленджам"
+msgstr "Back to challenges"
+
+msgid "Добро пожаловать!"
+msgstr "Welcome!"
+
+msgid "Войди в свой аккаунт"
+msgstr "Login to your account"
+
+msgid "Нет аккаунта?"
+msgstr "Don't have an account?"
+
+msgid "Присоединяйся к Жашыл Кыргызстан"
+msgstr "Join Green Kyrgyzstan"
+
+msgid "Зарегистрироваться"
+msgstr "Register"
+
+msgid "Уже есть аккаунт?"
+msgstr "Already have an account?"
+
+msgid "Профиль"
+msgstr "Profile"
+
+msgid "Челленджей"
+msgstr "Challenges"
+
+msgid "Мои челленджи"
+msgstr "My challenges"
+
+msgid "Ты ещё не участвуешь в челленджах"
+msgstr "You are not participating in challenges yet"
+
+msgid "Мои точки на карте"
+msgstr "My points on the map"
+
+msgid "Ты ещё не отметил точки на карте"
+msgstr "You haven't marked points on the map yet"
+
+msgid "Мои значки"
+msgstr "My badges"
+
+msgid "Первый шаг"
+msgstr "First step"
+
+msgid "Эко-воин"
+msgstr "Eco-warrior"
+
+msgid "Страж природы"
+msgstr "Guardian of nature"
+
+msgid "Защитник воды"
+msgstr "Water defender"

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}Команды — Жашыл KG{% endblock %}
+{% block title %}{% trans "Команды" %} — Жашыл KG{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -119,21 +119,21 @@ button.btn-outline { background: transparent; font-size: 1rem; }
             <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
             <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
         </svg>
-        Команды
+        {% trans "Команды" %}
     </h1>
-    <p>Объединяйтесь и меняйте Кыргызстан вместе!</p>
+    <p>{% trans "Объединяйтесь и меняйте Кыргызстан вместе!" %}</p>
 </div>
 
 <div class="teams-container">
     <div class="teams-header">
-        <h2>Все команды ({{ teams.count }})</h2>
-        <a href="/teams/create/" class="btn-primary">+ Создать команду</a>
+        <h2>{% trans "Все команды" %} ({{ teams.count }})</h2>
+        <a href="{% url 'create_team' %}" class="btn-primary">+ {% trans "Создать команду" %}</a>
     </div>
 
     <form method="get" class="team-search">
-        <input type="text" name="q" value="{{ q }}" placeholder="Найти команду по названию...">
-        <button type="submit" class="btn-primary">Найти</button>
-        {% if q %}<a href="{% url 'teams' %}" class="btn-outline">Сбросить</a>{% endif %}
+        <input type="text" name="q" value="{{ q }}" placeholder="{% trans 'Найти команду по названию...' %}">
+        <button type="submit" class="btn-primary">{% trans "Найти" %}</button>
+        {% if q %}<a href="{% url 'teams' %}" class="btn-outline">{% trans "Сбросить" %}</a>{% endif %}
     </form>
 
     {% if teams %}
@@ -151,7 +151,7 @@ button.btn-outline { background: transparent; font-size: 1rem; }
                 </div>
                 <div>
                     <div class="team-name">{{ team.name }}</div>
-                    <div class="team-members">Участников: {{ team.members.count }}</div>
+                    <div class="team-members">{% trans "Участников" %}: {{ team.members.count }}</div>
                 </div>
             </div>
 
@@ -161,15 +161,15 @@ button.btn-outline { background: transparent; font-size: 1rem; }
 
             <div class="team-stats">
                 <div class="team-stat">{{ team.total_points }} pts</div>
-                <div class="team-stat">Участников: {{ team.members.count }}</div>
+                <div class="team-stat">{% trans "Участников" %}: {{ team.members.count }}</div>
             </div>
 
             <div class="team-footer">
-                <a href="/teams/{{ team.pk }}/" class="btn-outline">Подробнее</a>
+                <a href="{% url 'team_detail' team.pk %}" class="btn-outline">{% trans "Подробнее" %}</a>
                 {% if user not in team.members.all %}
-                <form method="post" action="{% url 'join_team' team.pk %}" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-primary">Вступить</button></form>
+                <form method="post" action="{% url 'join_team' team.pk %}" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-primary">{% trans "Вступить" %}</button></form>
                 {% else %}
-                <span class="badge badge-green">Вы в команде</span>
+                <span class="badge badge-green">{% trans "Вы в команде" %}</span>
                 {% endif %}
             </div>
         </div>
@@ -186,13 +186,13 @@ button.btn-outline { background: transparent; font-size: 1rem; }
             </svg>
         </div>
         {% if q %}
-        <h3>Ничего не найдено</h3>
-        <p>Нет команд по запросу «{{ q }}».</p>
+        <h3>{% trans "Ничего не найдено" %}</h3>
+        <p>{% trans "Нет команд по запросу" %} «{{ q }}».</p>
         {% else %}
-        <h3>Команд пока нет</h3>
-        <p>Создай первую команду!</p>
+        <h3>{% trans "Команд пока нет" %}</h3>
+        <p>{% trans "Создай первую команду!" %}</p>
         {% endif %}
-        <a href="/teams/create/" class="btn-primary" style="display:inline-block; margin-top:1rem;">Создать команду</a>
+        <a href="{% url 'create_team' %}" class="btn-primary" style="display:inline-block; margin-top:1rem;">{% trans "Создать команду" %}</a>
     </div>
     {% endif %}
 </div>

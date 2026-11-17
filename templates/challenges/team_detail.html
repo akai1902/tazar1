@@ -5,161 +5,35 @@
 
 {% block extra_css %}
 <style>
-.team-hero {
-    background: linear-gradient(135deg, #1a3a2a 0%, #2D6A4F 100%);
-    color: white;
-    padding: 3rem 2rem;
-    text-align: center;
-}
-
-.team-hero-avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3rem;
-    margin: 0 auto 1rem;
-    border: 3px solid rgba(255,255,255,0.5);
-}
-
+.team-hero { background: linear-gradient(135deg, #1a3a2a 0%, #2D6A4F 100%); color: white; padding: 3rem 2rem; text-align: center; }
+.team-hero-avatar { width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto 1rem; border: 3px solid rgba(255,255,255,0.5); }
 .team-hero h1 { font-size: 2rem; font-weight: 800; }
 .team-hero p { opacity: 0.8; margin-top: 0.5rem; }
-
-.team-stats {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-top: 1.5rem;
-}
-
-.team-stat {
-    text-align: center;
-    background: rgba(255,255,255,0.15);
-    padding: 0.8rem 1.5rem;
-    border-radius: 12px;
-}
-
+.team-stats { display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; }
+.team-stat { text-align: center; background: rgba(255,255,255,0.15); padding: 0.8rem 1.5rem; border-radius: 12px; }
 .team-stat-num { font-size: 1.8rem; font-weight: 800; }
 .team-stat-label { font-size: 0.8rem; opacity: 0.8; display: flex; align-items: center; justify-content: center; gap: 0.3rem; }
-
-.team-container {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 0 2rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-}
-
-.team-card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
-    padding: 1.5rem;
-}
-
-.team-card h3 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.member-item {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 0.7rem 0;
-    border-bottom: 1px solid var(--bg);
-}
-
-.member-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
+.team-container { max-width: 900px; margin: 2rem auto; padding: 0 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.team-card { background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow); padding: 1.5rem; }
+.team-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary); display: flex; align-items: center; gap: 0.4rem; }
+.member-item { display: flex; align-items: center; gap: 0.8rem; padding: 0.7rem 0; border-bottom: 1px solid var(--bg); }
+.member-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-light)); display: flex; align-items: center; justify-content: center; }
 .member-info { flex: 1; }
 .member-name { font-weight: 600; display: flex; align-items: center; gap: 0.4rem; }
 .member-points { color: var(--primary); font-weight: 700; font-size: 0.9rem; }
-
-.creator-badge {
-    background: #fef3c7;
-    color: #92400e;
-    padding: 0.2rem 0.6rem;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.2rem;
-}
-
-.btn-danger {
-    background: #ef4444;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.85rem;
-    text-decoration: none;
-    transition: background 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-}
-
+.creator-badge { background: #fef3c7; color: #92400e; padding: 0.2rem 0.6rem; border-radius: 8px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.2rem; }
+.btn-danger { background: #ef4444; color: white; padding: 0.5rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: background 0.2s; display: inline-flex; align-items: center; gap: 0.3rem; }
 .btn-danger:hover { background: #dc2626; }
-
-.add-member-form {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.add-member-form input {
-    flex: 1;
-    padding: 0.6rem 1rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    background: var(--bg);
-    color: var(--text);
-    font-size: 0.9rem;
-}
-
-.add-member-form input:focus {
-    outline: none;
-    border-color: var(--primary);
-}
-
-/* SVG icon helpers */
-.icon { display: inline-flex; align-items: center; flex-shrink: 0; }
-
-button.btn-primary, button.btn-outline, button.btn-danger { font-family: inherit; cursor: pointer; }
-button.btn-primary { border: none; font-size: 1rem; }
-button.btn-outline { background: transparent; font-size: 1rem; }
+.add-member-form { display: flex; gap: 0.5rem; margin-top: 1rem; }
+.add-member-form input { flex: 1; padding: 0.6rem 1rem; border: 2px solid #e5e7eb; border-radius: 8px; background: var(--bg); color: var(--text); font-size: 0.9rem; }
+.add-member-form input:focus { outline: none; border-color: var(--primary); }
 </style>
 {% endblock %}
 
 {% block content %}
-
 {% if messages %}
     {% for message in messages %}
-    <div style="background: {% if message.tags == 'error' %} #fee2e2 {% else %}#d1fae5{% endif %}; 
-                color: {% if message.tags == 'error' %}#991b1b{% else %}#065f46{% endif %};
-                padding: 1rem 2rem; text-align: center; font-weight: 600;">
+    <div style="background: {% if message.tags == 'error' %}#fee2e2{% else %}#d1fae5{% endif %}; color: {% if message.tags == 'error' %}#991b1b{% else %}#065f46{% endif %}; padding: 1rem 2rem; text-align: center; font-weight: 600;">
         {{ message }}
     </div>
     {% endfor %}
@@ -167,212 +41,75 @@ button.btn-outline { background: transparent; font-size: 1rem; }
 
 <div class="team-hero">
     <div class="team-hero-avatar">
-        <!-- users icon -->
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
         </svg>
     </div>
     <h1>{{ team.name }}</h1>
-    {% if team.description %}
-    <p>{{ team.description }}</p>
-    {% endif %}
+    {% if team.description %}<p>{{ team.description }}</p>{% endif %}
     <div class="team-stats">
         <div class="team-stat">
             <div class="team-stat-num">{{ team.total_points }}</div>
-            <div class="team-stat-label">
-                <!-- coin/star icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 6v6l4 2"/>
-                </svg>
-                Баллов
-            </div>
+            <div class="team-stat-label">{% trans "Баллов" %}</div>
         </div>
         <div class="team-stat">
             <div class="team-stat-num">{{ team.members.count }}</div>
-            <div class="team-stat-label">
-                <!-- user icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                </svg>
-                Участников
-            </div>
+            <div class="team-stat-label">{% trans "Участников" %}</div>
         </div>
     </div>
 </div>
 
-<!-- КНОПКИ ДЕЙСТВИЙ -->
 <div style="max-width:900px; margin: 1rem auto; padding: 0 2rem; display:flex; gap:1rem; justify-content:flex-end; flex-wrap:wrap;">
     {% if user in team.members.all %}
         {% if user == team.created_by %}
-            <span class="badge badge-green" style="padding:0.5rem 1rem; display:inline-flex; align-items:center; gap:0.4rem;">
-                <!-- crown icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 20h20"/>
-                    <path d="M5 20V9l7-5 7 5v11"/>
-                    <path d="M9 20v-5h6v5"/>
-                </svg>
-                Вы создатель
-            </span>
-            <form method="post" action="{% url 'delete_team' team.pk %}" onsubmit="return confirm('Удалить команду?')" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-danger">
-                <!-- trash icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"/>
-                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                    <path d="M10 11v6"/>
-                    <path d="M14 11v6"/>
-                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                </svg>
-                Удалить команду
-            </button></form>
+            <span class="badge badge-green" style="padding:0.5rem 1rem; display:inline-flex; align-items:center; gap:0.4rem;">{% trans "Вы создатель" %}</span>
+            <form method="post" action="{% url 'delete_team' team.pk %}" onsubmit="return confirm('{% trans "Удалить команду?" %}')" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-danger">{% trans "Удалить команду" %}</button></form>
         {% else %}
-            <form method="post" action="{% url 'leave_team' team.pk %}" onsubmit="return confirm('Покинуть команду?')" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-outline">Покинуть команду</button></form>
+            <form method="post" action="{% url 'leave_team' team.pk %}" onsubmit="return confirm('{% trans "Покинуть команду?" %}')" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-outline">{% trans "Покинуть команду" %}</button></form>
         {% endif %}
     {% else %}
-        <form method="post" action="{% url 'join_team' team.pk %}" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-primary">Вступить в команду</button></form>
+        <form method="post" action="{% url 'join_team' team.pk %}" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-primary">{% trans "Вступить в команду" %}</button></form>
     {% endif %}
 </div>
 
 <div class="team-container">
-
-    <!-- УЧАСТНИКИ -->
     <div class="team-card">
-        <h3>
-            <!-- user icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-            </svg>
-            Участники ({{ team.members.count }})
-        </h3>
+        <h3>{% trans "Участники" %} ({{ team.members.count }})</h3>
         {% for member in team.members.all %}
         <div class="member-item">
-            <div class="member-avatar">
-                <!-- user icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                </svg>
-            </div>
+            <div class="member-avatar">👤</div>
             <div class="member-info">
-                <div class="member-name">
-                    {{ member.username }}
-                    {% if member == team.created_by %}
-                    <span class="creator-badge">
-                        <!-- crown icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M2 20h20"/>
-                            <path d="M5 20V9l7-5 7 5v11"/>
-                            <path d="M9 20v-5h6v5"/>
-                        </svg>
-                    </span>
-                    {% endif %}
-                </div>
+                <div class="member-name">{{ member.username }} {% if member == team.created_by %}<span class="creator-badge">👑</span>{% endif %}</div>
                 <div class="member-points">{{ member.points }} pts</div>
             </div>
             {% if user == team.created_by and member != team.created_by %}
-            <form method="post" action="{% url 'remove_member' team.pk member.pk %}" onsubmit="return confirm('Удалить участника?')" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-danger" style="padding:0.3rem 0.6rem; font-size:0.8rem;">
-                <!-- x icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-            </button></form>
+            <form method="post" action="{% url 'remove_member' team.pk member.pk %}" onsubmit="return confirm('{% trans "Удалить участника?" %}')" style="margin:0; display:inline-flex;">{% csrf_token %}<button type="submit" class="btn-danger" style="padding:0.3rem 0.6rem; font-size:0.8rem;">✕</button></form>
             {% endif %}
         </div>
         {% endfor %}
 
-        <!-- ДОБАВИТЬ УЧАСТНИКА (только создатель) -->
         {% if user == team.created_by %}
         <div style="margin-top:1rem;">
-            <div style="font-weight:600; margin-bottom:0.5rem; font-size:0.9rem; display:flex; align-items:center; gap:0.4rem;">
-                <!-- plus icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"/>
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                Добавить участника
-            </div>
-            <form method="POST" action="/teams/{{ team.pk }}/add-member/" class="add-member-form">
+            <div style="font-weight:600; margin-bottom:0.5rem; font-size:0.9rem;">{% trans "Добавить участника" %}</div>
+            <form method="POST" action="{% url 'add_member' team.pk %}" class="add-member-form">
                 {% csrf_token %}
-                <input type="text" name="username" placeholder="Введи username..." required>
-                <button type="submit" class="btn-primary">Добавить</button>
+                <input type="text" name="username" placeholder="{% trans 'Введи username...' %}" required>
+                <button type="submit" class="btn-primary">{% trans "Добавить" %}</button>
             </form>
         </div>
         {% endif %}
     </div>
 
-    <!-- ИНФО -->
     <div class="team-card">
-        <h3>
-            <!-- bar-chart icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="20" x2="18" y2="10"/>
-                <line x1="12" y1="20" x2="12" y2="4"/>
-                <line x1="6" y1="20" x2="6" y2="14"/>
-                <line x1="2" y1="20" x2="22" y2="20"/>
-            </svg>
-            О команде
-        </h3>
-        <div class="member-item">
-            <span style="display:flex; align-items:center; gap:0.4rem;">
-                <!-- crown icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 20h20"/>
-                    <path d="M5 20V9l7-5 7 5v11"/>
-                    <path d="M9 20v-5h6v5"/>
-                </svg>
-                Создатель
-            </span>
-            <span style="font-weight:600;">{{ team.created_by.username }}</span>
-        </div>
-        <div class="member-item">
-            <span style="display:flex; align-items:center; gap:0.4rem;">
-                <!-- users icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-                Участников
-            </span>
-            <span style="font-weight:600;">{{ team.members.count }}</span>
-        </div>
-        <div class="member-item">
-            <span style="display:flex; align-items:center; gap:0.4rem;">
-                <!-- circle/coin icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 6v6l4 2"/>
-                </svg>
-                Общие баллы
-            </span>
-            <span style="font-weight:600; color:var(--primary)">{{ team.total_points }}</span>
-        </div>
-        <div class="member-item">
-            <span style="display:flex; align-items:center; gap:0.4rem;">
-                <!-- calendar icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-                Создана
-            </span>
-            <span style="font-weight:600;">{{ team.created_at|date:"d.m.Y" }}</span>
-        </div>
+        <h3>{% trans "О команде" %}</h3>
+        <div class="member-item"><span>{% trans "Создатель" %}</span><span style="font-weight:600;">{{ team.created_by.username }}</span></div>
+        <div class="member-item"><span>{% trans "Участников" %}</span><span style="font-weight:600;">{{ team.members.count }}</span></div>
+        <div class="member-item"><span>{% trans "Общие баллы" %}</span><span style="font-weight:600; color:var(--primary)">{{ team.total_points }}</span></div>
+        <div class="member-item"><span>{% trans "Создана" %}</span><span style="font-weight:600;">{{ team.created_at|date:"d.m.Y" }}</span></div>
     </div>
-
 </div>
 
 <div style="max-width:900px; margin: 0 auto; padding: 0 2rem 2rem;">
-    <a href="/teams/" style="color:var(--primary); text-decoration:none; font-weight:600;">← Назад к командам</a>
+    <a href="{% url 'teams' %}" style="color:var(--primary); text-decoration:none; font-weight:600;">← {% trans "Назад к командам" %}</a>
 </div>
-
 {% endblock %}

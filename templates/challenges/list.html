@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}Челленджи — Жашыл KG{% endblock %}
+{% block title %}{% trans "Челленджи" %} — Жашыл KG{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -178,25 +178,25 @@ body.dark-mode .point-banner { background: #0c2d48; color: #bae6fd; }
 {% block content %}
 
 <div class="challenges-hero">
-    <h1> ♻ Эко-Челленджи</h1>
-    <p>Выполняй задания, зарабатывай баллы и меняй Кыргызстан</p>
+    <h1> ♻ {% trans "Эко-Челленджи" %}</h1>
+    <p>{% trans "Выполняй задания, зарабатывай баллы и меняй Кыргызстан" %}</p>
 </div>
 
 {% if point %}
 <div class="point-banner">
-    <div>📍 Решаем проблему: <b>«{{ point.title }}»</b> ({{ point.get_type_display }})<br>
-        <small>Выбери подходящий челлендж ниже.</small></div>
-    <a href="{% url 'challenges' %}" class="btn-outline">Сбросить</a>
+    <div>📍 {% trans "Решаем проблему" %}: <b>«{{ point.title }}»</b> ({{ point.get_type_display }})<br>
+        <small>{% trans "Выбери подходящий челлендж ниже." %}</small></div>
+    <a href="{% url 'challenges' %}" class="btn-outline">{% trans "Сбросить" %}</a>
 </div>
 {% endif %}
 
 <!-- ФИЛЬТРЫ -->
 <div class="filter-bar" style="max-width:1200px; margin: 1.5rem auto;">
-    <span style="font-weight:600;">Фильтр:</span>
-    <button class="filter-btn active" onclick="filterChallenges('all', this)">Все</button>
-    <button class="filter-btn" onclick="filterChallenges('ecology', this)">Экология</button>
-    <button class="filter-btn" onclick="filterChallenges('culture', this)">Культура</button>
-    <button class="filter-btn" onclick="filterChallenges('volunteer', this)">Волонтёрство</button>
+    <span style="font-weight:600;">{% trans "Фильтр" %}:</span>
+    <button class="filter-btn active" onclick="filterChallenges('all', this)">{% trans "Все" %}</button>
+    <button class="filter-btn" onclick="filterChallenges('ecology', this)">{% trans "Экология" %}</button>
+    <button class="filter-btn" onclick="filterChallenges('culture', this)">{% trans "Культура" %}</button>
+    <button class="filter-btn" onclick="filterChallenges('volunteer', this)">{% trans "Волонтёрство" %}</button>
 </div>
 
 <div class="challenges-container">
@@ -223,18 +223,18 @@ body.dark-mode .point-banner { background: #0c2d48; color: #bae6fd; }
                     <div class="challenge-card-tags">
                         <span class="badge badge-green">{{ challenge.get_category_display }}</span>
                         {% if challenge.difficulty == 'easy' %}
-                            <span class="badge badge-green">Лёгкий</span>
+                            <span class="badge badge-green">{% trans "Лёгкий" %}</span>
                         {% elif challenge.difficulty == 'medium' %}
-                            <span class="badge badge-orange">Средний</span>
+                            <span class="badge badge-orange">{% trans "Средний" %}</span>
                         {% else %}
-                            <span class="badge badge-red">Сложный</span>
+                            <span class="badge badge-red">{% trans "Сложный" %}</span>
                         {% endif %}
                     </div>
                     <h3 class="challenge-card-title">{{ challenge.title }}</h3>
                     <p class="challenge-card-text">{{ challenge.description|truncatechars:80 }}</p>
                     <div class="challenge-card-footer">
                         <span class="points-badge">🟡 +{{ challenge.points }} pts</span>
-                        <a href="{% url 'challenge_detail' challenge.pk %}{% if point %}?point={{ point.pk }}{% endif %}" class="btn-primary">{% if point %}Выбрать{% else %}Подробнее{% endif %}</a>
+                        <a href="{% url 'challenge_detail' challenge.pk %}{% if point %}?point={{ point.pk }}{% endif %}" class="btn-primary">{% if point %}{% trans "Выбрать" %}{% else %}{% trans "Подробнее" %}{% endif %}</a>
                     </div>
                 </div>
             </div>
@@ -243,14 +243,14 @@ body.dark-mode .point-banner { background: #0c2d48; color: #bae6fd; }
         {% else %}
         <div class="empty-state">
             <div>♻️</div>
-            <h3>Челленджей пока нет</h3>
-            <p>Администратор скоро добавит задания!</p>
+            <h3>{% trans "Челленджей пока нет" %}</h3>
+            <p>{% trans "Администратор скоро добавит задания!" %}</p>
         </div>
         {% endif %}
         {% if not point %}
         <div class="open-points">
-            <h2 class="op-title">🗺️ Открытые проблемы на карте</h2>
-            <p class="op-sub">Выбери проблему, которую хочешь решить: подберём подходящий челлендж.</p>
+            <h2 class="op-title">🗺️ {% trans "Открытые проблемы на карте" %}</h2>
+            <p class="op-sub">{% trans "Выбери проблему, которую хочешь решить: подберём подходящий челлендж." %}</p>
             {% for p in open_points %}
             <div class="op-item">
                 <span>{% if p.type == 'trash' %}🔴{% elif p.type == 'water' %}🔵{% elif p.type == 'forest' %}🟠{% else %}🟣{% endif %}</span>
@@ -258,10 +258,10 @@ body.dark-mode .point-banner { background: #0c2d48; color: #bae6fd; }
                     <div class="op-name">{{ p.title }}</div>
                     <div class="op-meta">{{ p.get_type_display }} · {{ p.reported_by.username }}</div>
                 </div>
-                <a href="{% url 'challenges' %}?point={{ p.pk }}" class="btn-primary">Решить</a>
+                <a href="{% url 'challenges' %}?point={{ p.pk }}" class="btn-primary">{% trans "Решить" %}</a>
             </div>
             {% empty %}
-            <p class="op-empty">Открытых проблем пока нет. <a href="{% url 'ecomap' %}">Отметь первую на карте →</a></p>
+            <p class="op-empty">{% trans "Открытых проблем пока нет." %} <a href="{% url 'ecomap' %}">{% trans "Отметь первую на карте →" %}</a></p>
             {% endfor %}
         </div>
         {% endif %}
@@ -275,7 +275,7 @@ body.dark-mode .point-banner { background: #0c2d48; color: #bae6fd; }
                 <circle cx="12" cy="8" r="6"></circle>
                 <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
             </svg>
-            Топ участников
+            {% trans "Топ участников" %}
         </div>
         {% for u in top_users %}
         <div class="leaderboard-item">
@@ -287,9 +287,9 @@ body.dark-mode .point-banner { background: #0c2d48; color: #bae6fd; }
             <span class="lb-points">{{ u.points }} pts</span>
         </div>
         {% empty %}
-        <p style="color:var(--text-light); font-size:0.9rem; text-align:center; padding:1rem;">Пока никого нет. Стань первым!</p>
+        <p style="color:var(--text-light); font-size:0.9rem; text-align:center; padding:1rem;">{% trans "Пока никого нет. Стань первым!" %}</p>
         {% endfor %}
-        <a href="/leaderboard/" style="display:block; text-align:center; margin-top:1rem; color:var(--primary); font-weight:600; text-decoration:none;">Весь рейтинг →</a>
+        <a href="{% url 'leaderboard' %}" style="display:block; text-align:center; margin-top:1rem; color:var(--primary); font-weight:600; text-decoration:none;">{% trans "Весь рейтинг →" %}</a>
     </div>
 
     <div class="sidebar-card">
@@ -297,7 +297,7 @@ body.dark-mode .point-banner { background: #0c2d48; color: #bae6fd; }
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
             </svg>
-            Статистика
+            {% trans "Статистика" %}
         </div>
         <div class="leaderboard-item">
             <div style="display:flex; align-items:center; gap:0.5rem;">
@@ -308,7 +308,7 @@ body.dark-mode .point-banner { background: #0c2d48; color: #bae6fd; }
                     <path d="m9.344 5.811 1.093-1.892A1.83 1.83 0 0 1 11.985 3a1.784 1.784 0 0 1 1.546.888l3.943 6.843"/>
                     <path d="m13.378 9.633 4.096 1.098 1.097-4.096"/>
                 </svg>
-                Всего челленджей
+                {% trans "Всего челленджей" %}
             </div>
             <span class="lb-points">{{ total_challenges }}</span>
         </div>
@@ -320,7 +320,7 @@ body.dark-mode .point-banner { background: #0c2d48; color: #bae6fd; }
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
                     <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                 </svg>
-                Участников
+                {% trans "Участников" %}
             </div>
             <span class="lb-points">{{ users_count }}</span>
         </div>

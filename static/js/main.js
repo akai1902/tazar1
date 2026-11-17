@@ -69,3 +69,18 @@ navLinks.forEach(link => {
         }
     });
 });
+
+// ===== СМЕНА ЯЗЫКА ЧЕРЕЗ ПРЕФИКСЫ =====
+function changeLanguage(langCode) {
+    const currentPath = window.location.pathname;
+    // Убираем текущие языковые префиксы /ru/, /ky/, /en/ из начала пути, если они есть
+    let cleanPath = currentPath.replace(/^\/(ru|ky|en)(?=\/|$)/, '');
+    if (cleanPath === '') cleanPath = '/';
+
+    // Формируем новый путь в зависимости от выбранного языка
+    // Поскольку у русского стоит prefix_default_language=False, он идет без префикса
+    let newPath = langCode === 'ru' ? cleanPath : '/' + langCode + cleanPath;
+
+    window.location.href = newPath;
+}
+
