@@ -4,6 +4,20 @@
 
 {% block extra_css %}
 <style>
+/* Фикс футера для страницы рейтинга */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+main {
+    flex: 1;
+}
+
 .leaderboard-hero {
     background: linear-gradient(135deg, #1a3a2a 0%, #2D6A4F 100%);
     color: white;
@@ -224,30 +238,44 @@ body.dark-mode .leaderboard-row.current-user { background: #1a3a2a; }
 
 <!-- КОМАНДЫ -->
 <div id="section-teams" style="display:none;">
-    <div class="leaderboard-container">
-        {% for team in teams %}
-        <div class="leaderboard-row">
-            <div class="lb-rank">
-                {% if forloop.counter == 1 %}🥇
-                {% elif forloop.counter == 2 %}🥈
-                {% elif forloop.counter == 3 %}🥉
-                {% else %}{{ forloop.counter }}{% endif %}
-            </div>
-            <div class="lb-avatar">👥</div>
-            <div class="lb-info">
-                <div class="lb-username"><a href="{% url 'team_detail' team.pk %}" style="color:inherit; text-decoration:none;">{{ team.name }}</a></div>
-                <div class="lb-city">👤 {{ team.members.count }} участников</div>
-            </div>
-            <div class="lb-points-big">{{ team.total_points }} pts</div>
+
+    <div class="leaderboard-hero">
+        <h1>🏆 Рейтинг команд</h1>
+        <p>Самые сплоченные эко-команды Кыргызстана</p>
+        <div style="margin-top: 1rem; font-size: 0.95rem; opacity: 0.95;">
+            Не состоишь в команде?
+            <a href="/teams/" style="color: #fff; text-decoration: underline; margin-left: 0.3rem;">Присоединяйся</a> |
+            <a href="/teams/create/" style="color: #fff; text-decoration: underline; margin-left: 0.3rem;">Создавай</a>
         </div>
-        {% empty %}
-        <div style="text-align:center; padding:3rem; color:var(--text-light);">
-            <div style="font-size:3rem;">👥</div>
-            <h3>Команд пока нет</h3>
-            <a href="/teams/create/" class="btn-primary" style="display:inline-block; margin-top:1rem;">Создать команду</a>
-        </div>
-        {% endfor %}
     </div>
+
+    <div class="leaderboard-container">
+        <div class="leaderboard-table">
+            {% for team in teams %}
+            <div class="leaderboard-row">
+                <div class="lb-rank">
+                    {% if forloop.counter == 1 %}🥇
+                    {% elif forloop.counter == 2 %}🥈
+                    {% elif forloop.counter == 3 %}🥉
+                    {% else %}{{ forloop.counter }}{% endif %}
+                </div>
+                <div class="lb-avatar">👥</div>
+                <div class="lb-info">
+                    <div class="lb-username"><a href="{% url 'team_detail' team.pk %}" style="color:inherit; text-decoration:none;">{{ team.name }}</a></div>
+                    <div class="lb-city">👤 {{ team.members.count }} участников</div>
+                </div>
+                <div class="lb-points-big">{{ team.total_points }} pts</div>
+            </div>
+            {% empty %}
+            <div style="text-align:center; padding:3rem; color:var(--text-light);">
+                <div style="font-size:3rem;">👥</div>
+                <h3>Команд пока нет</h3>
+                <a href="/teams/create/" class="btn-primary" style="display:inline-block; margin-top:1rem;">Создать команду</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
 </div>
 
 <script>
